@@ -1,6 +1,6 @@
 using LaserTypes
-using Test
+using Test, SafeTestsets
 
 @testset "LaserTypes.jl" begin
-    # Write your own tests here.
+    @safetestset "Gauss" begin include("gauss.jl") end
 end
