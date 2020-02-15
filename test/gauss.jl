@@ -2,6 +2,7 @@ using LaserTypes, Test
 using Unitful
 using StaticArrays
 using UnitfulAtomic
+using Parameters
 import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
 @testset "SI units" begin
