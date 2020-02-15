@@ -4,9 +4,9 @@ using Unitful
 using Parameters
 using GeometryTypes: Vec3
 import PhysicalConstants.CODATA2018: c_0, m_e, e
-using ..LaserTypes: TemporalProfiles, w, f
+using ..LaserTypes: TemporalProfiles, w, g, R
 
-@with_kw struct LaserParams{V,Q,M,L,T,F,C,I,P,W,K,E}
+@with_kw struct LaserParams{V,Q,M,L,F,C,T,P,W,K,E}
     # independent values
     c::V = c_0
     q::Q = -e
@@ -16,7 +16,7 @@ using ..LaserTypes: TemporalProfiles, w, f
     φ₀::F = 0.0
     w₀::L = 58.0u"μm"
     ξx::C = 1.0 + 0im
-    ξy::C = -1.0im
+    ξy::C = 0.0 + 0im
     @assert hypot(ξx, ξy) ≈ 1
     τ₀::T = 18.02u"fs"
     z_F::L = uconvert(unit(λ), -4*τ₀*c)
@@ -30,10 +30,11 @@ using ..LaserTypes: TemporalProfiles, w, f
 end
 
 function Ex(z, r, par)
-    @unpack E₀, w₀, k, z_R, φ₀ = par
+    @unpack E₀, w₀, k, z_R, φ₀, ξx = par
     wz = w(z, par)
+    Rz = R(z, z_R)
 
-    E₀ * w₀/wz * exp(-im*k*z - (r/wz)^2 - im*((z*r^2)/(z_R*wz^2) + atan(z, z_R) + φ₀))
+    ξx * E₀ * w₀/wz * exp(-im*k*z - (r/wz)^2 - im*((k*r^2)/(2Rz) - atan(z, z_R) - φ₀))
 end
 
 Ey(z, r, par) = par.ξy / par.ξx * Ex(z, r, par)
