@@ -10,6 +10,12 @@ function w(z, par)
     w₀ * √(1 + (z/z_R)^2)
 end
 
+function g(z, t, par)
+    @unpack envelope, ω₀ = par
+
+    exp(im*ω₀*t) * envelope(z, t, par)
+end
+
 include("envelopes.jl")
 include("gauss.jl")
 

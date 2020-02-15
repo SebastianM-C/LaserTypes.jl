@@ -4,9 +4,9 @@ using Unitful
 using Parameters
 using GeometryTypes: Vec3
 import PhysicalConstants.CODATA2018: c_0, m_e, e
-using ..LaserTypes: TemporalProfiles, w
+using ..LaserTypes: TemporalProfiles, w, f
 
-@with_kw struct LaserParams{V,Q,M,L,T,F,I,P,W,K,E}
+@with_kw struct LaserParams{V,Q,M,L,T,F,C,I,P,W,K,E}
     # independent values
     c::V = c_0
     q::Q = -e
@@ -15,7 +15,9 @@ using ..LaserTypes: TemporalProfiles, w
     a₀::F = 1.0
     φ₀::F = 0.0
     w₀::L = 58.0u"μm"
-    α_P::I = 0
+    ξx::C = 1.0 + 0im
+    ξy::C = -1.0im
+    @assert hypot(ξx, ξy) ≈ 1
     τ₀::T = 18.02u"fs"
     z_F::L = uconvert(unit(λ₀), -4*τ₀*c)
     envelope::P = TemporalProfiles.gaussian
@@ -31,11 +33,10 @@ function Ex(z, r, par)
     @unpack E₀, w₀, k₀, z_R, φ₀ = par
     wz = w(z, par)
 
-    # TODO: remove `uconvert` from `atan` after Unitful@1.0.0 is released
-    E₀ * w₀/wz * exp(-im*k₀*z - r^2/wz^2 - im*((z*r^2)/(z_R*wz^2) + atan(uconvert(unit(z_R), z), z_R) + φ₀))
+    E₀ * w₀/wz * exp(-im*k₀*z - r^2/wz^2 - im*((z*r^2)/(z_R*wz^2) + atan(z, z_R) + φ₀))
 end
 
-Ey(z, r, par) = -im * par.α_P * Ex(z, r, par)
+Ey(z, r, par) = par.ξy / par.ξx * Ex(z, r, par)
 
 function Ez(x, y, z, r, par)
     @unpack k₀, z_R = par
@@ -46,7 +47,6 @@ end
 
 function E(x, y, z, t, par)
     r = hypot(x, y)
-    g = par.envelope
 
     E_x = Ex(z, r, par)
     E_y = Ey(z, r, par)
@@ -68,7 +68,6 @@ end
 
 function B(x, y, z, t, par)
     r = hypot(x, y)
-    g = par.envelope
 
     B_x = Bx(z, r, par)
     B_y = By(z, r, par)
