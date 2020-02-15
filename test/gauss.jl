@@ -23,9 +23,9 @@ end
     λ = auconvert(800u"nm")
     w0 = auconvert(58u"μm")
     τ0 = auconvert(18u"fs")
-    p = Gauss.LaserParams(c=c, q=q, m_q=m, λ₀=λ, w₀=w0, τ₀=τ0)
+    p = Gauss.LaserParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
 
-    @test p.ω₀ ≈ 0.05695419u"Eh_au/ħ_au"
+    @test p.ω ≈ 0.05695419u"Eh_au/ħ_au"
 
     x₀ = SVector{3}(1,1,0.)u"a0_au"
 
@@ -42,9 +42,9 @@ end
     λ = austrip(800u"nm")
     w0 = austrip(58u"μm")
     τ0 = austrip(18u"fs")
-    p = Gauss.LaserParams(c=c, q=q, m_q=m, λ₀=λ, w₀=w0, τ₀=τ0)
+    p = Gauss.LaserParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
 
-    @test p.ω₀ ≈ 0.05695419
+    @test p.ω ≈ 0.05695419
 
     x₀ = SVector{3}(1,1,0.)
 

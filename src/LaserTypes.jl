@@ -11,9 +11,9 @@ function w(z, par)
 end
 
 function g(z, t, par)
-    @unpack envelope, ω₀ = par
+    @unpack envelope, ω = par
 
-    exp(im*ω₀*t) * envelope(z, t, par)
+    exp(im*ω*t) * envelope(z, t, par)
 end
 
 include("envelopes.jl")
