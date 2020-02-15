@@ -25,6 +25,7 @@ end
 
 include("envelopes.jl")
 include("gauss.jl")
+include("laguerre-gauss.jl")
 
 # https://github.com/JuliaLang/julia/issues/34771
 Base.hypot(x::T, y::T) where {T<:Number} = !iszero(x) ? (z = y/x; abs(x) * sqrt(one(z) + z*z)) : abs(y)

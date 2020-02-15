@@ -2,6 +2,8 @@ module TemporalProfiles
 
 using Parameters
 
+constant(z, t, par) = 1
+
 function gaussian(z, t, par)
     @unpack c, τ₀, z_F = par
 
