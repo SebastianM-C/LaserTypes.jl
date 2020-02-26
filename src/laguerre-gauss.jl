@@ -8,7 +8,7 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e
 using ..LaserTypes: TemporalProfiles, w, g
 using ..Gauss
 
-const ₁F₁ = drummond1F1
+const _₁F₁ = HypergeometricFunctions.drummond1F1
 
 @with_kw struct LaserParams{V,Q,M,L,F,C,T,P,I,W,K,E,R}
     # independent values:
@@ -45,7 +45,7 @@ function Ex(x, y, z, r, par)
     mₐ = abs(m)
     φ = atan(x, y)
 
-    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*φ-φ₀))
+    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*φ-φ₀))
 end
 
 Ey(x, y, z, r, par) = par.ξy / par.ξx * Ex(x, y, z, r, par)
