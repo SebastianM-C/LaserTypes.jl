@@ -49,6 +49,7 @@ function Ex(x, y, z, r, par)
 end
 
 Ey(x, y, z, r, par) = par.ξy / par.ξx * Ex(x, y, z, r, par)
+Ey(Ex, par) = par.ξy / par.ξx * Ex
 
 function Ez(x, y, z, r, par)
     @unpack k, z_R = par
@@ -56,5 +57,11 @@ function Ez(x, y, z, r, par)
 
     -im / k * (-2*(1+im*(z/z_R))/wz + ∂₁F₁())
 end
+
+Bx(x, y, z, r, par) = -1/par.c * Ey(x, y, z, r, par)
+Bx(Ey, par) = -1/par.c * Ey
+
+By(x, y, z, r, par) = 1/par.c * Ex(x, y, z, r, par)
+By(Ex, par) = 1/par.c * Ex
 
 end  # module LaGuerreGauss

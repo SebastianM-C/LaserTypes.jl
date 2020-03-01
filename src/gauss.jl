@@ -38,6 +38,7 @@ function Ex(z, r, par)
 end
 
 Ey(z, r, par) = par.ξy / par.ξx * Ex(z, r, par)
+Ey(Ex, par) = par.ξy / par.ξx * Ex
 
 function Ez(x, y, z, r, par)
     @unpack k, z_R = par
@@ -46,19 +47,30 @@ function Ez(x, y, z, r, par)
     2(im - z/z_R) / (k*wz^2) * (x*Ex(z, r, par) + y*Ey(z, r, par))
 end
 
-function E(x, y, z, t, par)
+function Ez(Ex, Ey, x, y, z, par)
+    @unpack k, z_R = par
+    wz = w(z, par)
+
+    2(im - z/z_R) / (k*wz^2) * (x*Ex + y*Ey)
+end
+
+function E(x, y, z, par)
     r = hypot(x, y)
 
     E_x = Ex(z, r, par)
-    E_y = Ey(z, r, par)
-    E_z = Ez(x, y, z, r, par)
+    E_y = Ey(E_x, par)
+    E_z = Ez(E_x, E_y, x, y, z, par)
 
-    real(Vec3(E_x, E_y, E_z) * g(z, t, par))
+    real(Vec3(E_x, E_y, E_z))
 end
 
+E(x, y, z, t, par) = E(x, y, z, par) * real(g(z, t, par))
+
 Bx(z, r, par) = -1/par.c * Ey(z, r, par)
+Bx(Ey, par) = -1/par.c * Ey
 
 By(z, r, par) = 1/par.c * Ex(z, r, par)
+By(Ex, par) = 1/par.c * Ex
 
 function Bz(x, y, z, r, par)
     @unpack k, z_R, c = par
@@ -67,17 +79,48 @@ function Bz(x, y, z, r, par)
     2(im - z/z_R) / (c*k*wz^2) * (y*Ex(z, r, par) - x*Ey(z, r, par))
 end
 
-function B(x, y, z, t, par)
+function Bz(Ex, Ey, x, y, z, par)
+    @unpack k, z_R, c = par
+    wz = w(z, par)
+
+    2(im - z/z_R) / (c*k*wz^2) * (y*Ex - x*Ey)
+end
+
+function B(x, y, z, par)
     r = hypot(x, y)
 
-    B_x = Bx(z, r, par)
-    B_y = By(z, r, par)
-    B_z = Bz(x, y, z, r, par)
+    E_x = Ex(z, r, par)
+    E_y = Ey(E_x, par)
 
-    real(Vec3(B_x, B_y, B_z) * g(z, t, par))
+    B_x = Bx(E_y, par)
+    B_y = By(E_x, par)
+    B_z = Bz(E_x, E_y, x, y, z, par)
+
+    real(Vec3(B_x, B_y, B_z))
 end
+
+B(x, y, z, t, par) = B(x, y, z, par) * real(g(z, t, par))
 
 E(r, t, par) = E(r[1], r[2], r[3], t, par)
 B(r, t, par) = B(r[1], r[2], r[3], t, par)
+
+function EB(r, t, par)
+    x, y, z = r[1], r[2], r[3]
+    ElectricField = E(x, y, z, par)
+    Ex = ElectricField[1]
+    Ey = ElectricField[2]
+
+    B_x = Bx(Ey, par)
+    B_y = By(Ex, par)
+    B_z = Bz(Ex, Ey, x, y, z, par)
+
+    MagneticField = real(Vec3(B_x, B_y, B_z))
+
+    temporal_part = real(g(z, t, par))
+    ElectricField *= temporal_part
+    MagneticField *= temporal_part
+
+    return ElectricField, MagneticField
+end
 
 end  # module Gauss
