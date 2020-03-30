@@ -38,6 +38,9 @@ p = Gauss.LaserParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
 ```
 We can vizualize the intensity of the created electric field with Makie.jl like this:
 ```julia
+using Makie
+using LinearAlgebra
+
 f(x,y) = norm(E(Point3f0(x*10^6,y*10^6,p.z_F), 1, p))
 surface(-5:0.1:5, -5:0.1:5, f)
 ```
