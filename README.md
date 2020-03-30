@@ -41,3 +41,4 @@ We can vizualize the intensity of the created electric field with Makie.jl like 
 f(x,y) = norm(E(Point3f0(x*10^6,y*10^6,p.z_F), 1, p))
 surface(-5:0.1:5, -5:0.1:5, f)
 ```
+![gauss](assets/gauss.png)
