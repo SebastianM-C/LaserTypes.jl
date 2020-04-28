@@ -5,6 +5,16 @@ using UnitfulAtomic
 using Parameters
 import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
+E = Gauss.E
+B = Gauss.B
+
+Ex = Gauss.Ex
+Ey = Gauss.Ey
+Ez = Gauss.Ez
+Bx = Gauss.Bx
+By = Gauss.By
+Bz = Gauss.Bz
+
 @testset "SI units" begin
     p = Gauss.LaserParams()
     @unpack c, z_F, z_R, k, w₀, E₀ = p
@@ -17,9 +27,6 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
     x₀ = SVector{3}(0u"μm",0u"μm",z_F)
     t₀ = 0u"s"
 
-    E = Gauss.E
-    B = Gauss.B
-
     @testset "Dimensions" begin
         @test all(dimension.(E(x₀,t₀,p)) .== Ref(dimension(u"V/m")))
         @test all(dimension.(B(x₀,t₀,p)) .== Ref(dimension(u"T")))
@@ -31,13 +38,13 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
     end
 
     @testset "Values at origin" begin
-        @test Gauss.Ex(0u"μm", 0u"μm", p) ≈ E₀
-        @test iszero(Gauss.Ey(0u"μm", 0u"μm", p))
-        @test iszero(Gauss.Ez(0u"μm", 0u"μm", 0u"μm", 0u"μm", p))
+        @test Ex(0u"μm", 0u"μm", p) ≈ E₀
+        @test iszero(Ey(0u"μm", 0u"μm", p))
+        @test iszero(Ez(0u"μm", 0u"μm", 0u"μm", 0u"μm", p))
 
-        @test iszero(Gauss.Bx(0u"μm", 0u"μm", p))
-        @test Gauss.By(0u"μm", 0u"μm", p) ≈ E₀ / c
-        @test iszero(Gauss.Bz(0u"μm", 0u"μm", 0u"μm", 0u"μm", p))
+        @test iszero(Bx(0u"μm", 0u"μm", p))
+        @test By(0u"μm", 0u"μm", p) ≈ E₀ / c
+        @test iszero(Bz(0u"μm", 0u"μm", 0u"μm", 0u"μm", p))
     end
 
     @testset "Values at z_F" begin
@@ -67,9 +74,6 @@ end
     x₀ = SVector{3}(0u"a0_au",0u"a0_au",z_F)
     t₀ = 0u"ħ_au/Eh_au"
 
-    E = Gauss.E
-    B = Gauss.B
-
     @testset "Dimensions" begin
         @test all(dimension.(E(x₀,t₀,p)) .== Ref(dimension(u"V/m")))
         @test all(dimension.(B(x₀,t₀,p)) .== Ref(dimension(u"T")))
@@ -81,13 +85,13 @@ end
     end
 
     @testset "Values at origin" begin
-        @test Gauss.Ex(0u"a0_au", 0u"a0_au", p) ≈ E₀
-        @test iszero(Gauss.Ey(0u"a0_au", 0u"a0_au", p))
-        @test iszero(Gauss.Ez(0u"a0_au", 0u"a0_au", 0u"a0_au", 0u"a0_au", p))
+        @test Ex(0u"a0_au", 0u"a0_au", p) ≈ E₀
+        @test iszero(Ey(0u"a0_au", 0u"a0_au", p))
+        @test iszero(Ez(0u"a0_au", 0u"a0_au", 0u"a0_au", 0u"a0_au", p))
 
-        @test iszero(Gauss.Bx(0u"a0_au", 0u"a0_au", p))
-        @test Gauss.By(0u"a0_au", 0u"a0_au", p) ≈ E₀ / c
-        @test iszero(Gauss.Bz(0u"a0_au", 0u"a0_au", 0u"a0_au", 0u"a0_au", p))
+        @test iszero(Bx(0u"a0_au", 0u"a0_au", p))
+        @test By(0u"a0_au", 0u"a0_au", p) ≈ E₀ / c
+        @test iszero(Bz(0u"a0_au", 0u"a0_au", 0u"a0_au", 0u"a0_au", p))
     end
 
     @testset "Values at z_F" begin
@@ -117,13 +121,13 @@ end
     B = Gauss.B
 
     @testset "Values at origin" begin
-        @test Gauss.Ex(0, 0, p) ≈ E₀
-        @test iszero(Gauss.Ey(0, 0, p))
-        @test iszero(Gauss.Ez(0, 0, 0, 0, p))
+        @test Ex(0, 0, p) ≈ E₀
+        @test iszero(Ey(0, 0, p))
+        @test iszero(Ez(0, 0, 0, 0, p))
 
-        @test iszero(Gauss.Bx(0, 0, p))
-        @test Gauss.By(0, 0, p) ≈ E₀ / c
-        @test iszero(Gauss.Bz(0, 0, 0, 0, p))
+        @test iszero(Bx(0, 0, p))
+        @test By(0, 0, p) ≈ E₀ / c
+        @test iszero(Bz(0, 0, 0, 0, p))
     end
 
     @testset "Values at z_F" begin
