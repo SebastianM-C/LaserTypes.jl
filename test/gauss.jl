@@ -5,9 +5,6 @@ using UnitfulAtomic
 using Parameters
 import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
-E = Gauss.E
-B = Gauss.B
-
 Ex = Gauss.Ex
 Ey = Gauss.Ey
 Ez = Gauss.Ez
@@ -16,7 +13,7 @@ By = Gauss.By
 Bz = Gauss.Bz
 
 @testset "SI units" begin
-    p = Gauss.LaserParams()
+    p = Gauss.GaussParams()
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -61,7 +58,7 @@ end
     w0 = auconvert(58u"μm")
     τ0 = auconvert(18u"fs")
 
-    p = Gauss.LaserParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+    p = Gauss.GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -108,7 +105,7 @@ end
     w0 = austrip(58u"μm")
     τ0 = austrip(18u"fs")
 
-    p = Gauss.LaserParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+    p = Gauss.GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -116,9 +113,6 @@ end
 
     x₀ = SVector{3}(0, 0, z_F)
     t₀ = 0.
-
-    E = Gauss.E
-    B = Gauss.B
 
     @testset "Values at origin" begin
         @test Ex(0, 0, p) ≈ E₀
