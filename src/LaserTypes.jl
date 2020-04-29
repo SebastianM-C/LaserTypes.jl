@@ -1,6 +1,6 @@
 module LaserTypes
 
-export E, B, Gauss, LaguerreGauss, TemporalProfiles
+export E, B, Gauss, LaguerreGauss, GaussParams, LaguerreGaussParams, TemporalProfiles
 
 using Parameters
 

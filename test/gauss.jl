@@ -13,7 +13,7 @@ By = Gauss.By
 Bz = Gauss.Bz
 
 @testset "SI units" begin
-    p = Gauss.GaussParams()
+    p = GaussParams()
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -58,7 +58,7 @@ end
     w0 = auconvert(58u"μm")
     τ0 = auconvert(18u"fs")
 
-    p = Gauss.GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+    p = GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -105,7 +105,7 @@ end
     w0 = austrip(58u"μm")
     τ0 = austrip(18u"fs")
 
-    p = Gauss.GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+    p = GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
