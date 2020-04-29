@@ -1,8 +1,9 @@
 module LaserTypes
 
-export E, B, Gauss, LaguerreGauss, GaussParams, LaguerreGaussParams, TemporalProfiles
+export E, B, Gauss, LaguerreGauss, TemporalProfiles
 
 using Parameters
+using Reexport
 
 function w(z, par)
     @unpack w₀, z_R = par
@@ -51,5 +52,7 @@ end
 include("envelopes.jl")
 include("gauss.jl")
 include("laguerre-gauss.jl")
+
+@reexport using .Gauss, .LaguerreGauss
 
 end # module
