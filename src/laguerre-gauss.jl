@@ -1,16 +1,19 @@
-module LaGuerreGauss
+module LaguerreGauss
+
+export LaguerreGaussParams
 
 using HypergeometricFunctions
 using Unitful
 using Parameters
 using GeometryTypes: Vec3
 import PhysicalConstants.CODATA2018: c_0, m_e, e
-using ..LaserTypes: TemporalProfiles, w, g
+using ..LaserTypes: LaserTypes, TemporalProfiles, w, g, R
 using ..Gauss
 
 const _₁F₁ = HypergeometricFunctions.drummond1F1
+const pochhammer = HypergeometricFunctions.pochhammer
 
-@with_kw struct LaserParams{V,Q,M,L,F,C,T,P,I,W,K,E,R}
+@with_kw struct LaguerreGaussParams{V,Q,M,L,F,C,T,P,I,W,K,E,R}
     # independent values:
     c::V = c_0
     q::Q = -e
@@ -33,11 +36,11 @@ const _₁F₁ = HypergeometricFunctions.drummond1F1
     z_R::L = w₀^2 * k / 2; @assert z_R ≈ w₀^2 * k / 2
     T₀::T = uconvert(unit(τ₀), 2π / ω); @assert T₀ ≈ 2π / ω
     E₀::E = a₀ * m_q * c * ω / abs(q); @assert E₀ ≈ a₀ * m_q * c * ω / abs(q)
-    Nₚₘ::R = √(pochhammer(p+1, abs(l))); @assert Nₚₘ ≈ √(pochhammer(p+1, abs(l)))
+    Nₚₘ::R = √(pochhammer(p+1, abs(m))); @assert Nₚₘ ≈ √(pochhammer(p+1, abs(m)))
 end
 
 function Ex(x, y, z, r, par)
-    @unpack Nₚₘ, w₀, z_R, ξx, p, m = par
+    @unpack Nₚₘ, w₀, φ₀, z_R, ξx, p, m = par
     wz = w(z, par)
     Rz = R(z, z_R)
     Eg = Gauss.Ex(z, r, par)
@@ -51,11 +54,32 @@ end
 Ey(x, y, z, r, par) = par.ξy / par.ξx * Ex(x, y, z, r, par)
 Ey(Ex, par) = par.ξy / par.ξx * Ex
 
-function Ez(x, y, z, r, par)
-    @unpack k, z_R = par
+function Ez(Ex, Ey, x, y, z, r, par)
+    @unpack k, z_R, p, m = par
     wz = w(z, par)
+    mₐ = abs(m)
+    ∓ = m > 0 ? (-) : +
 
-    -im / k * (-2*(1+im*(z/z_R))/wz + ∂₁F₁())
+    -im / k * (
+        (-2*(1+im*(z/z_R))/wz^2
+        + 4p/(((mₐ+1)*wz^2) * _₁F₁(-p+1, mₐ+2, 2r^2/wz^2))) * (x*Ex + y*Ey)
+        - mₐ/(x+im*y) * (Ex ∓ im*Ey)
+        )
+end
+
+function Ez(x, y, z, r, par)
+    E_x = Ex(x,y,z,r,par)
+    Ez(E_x, Ey(E_x, par), x, y, z, r, par)
+end
+
+function LaserTypes.E(x, y, z, par::LaguerreGaussParams)
+    r = hypot(x, y)
+
+    E_x = Ex(x, y, z, r, par)
+    E_y = Ey(E_x, par)
+    E_z = Ez(E_x, E_y, x, y, z, r, par)
+
+    real(Vec3(E_x, E_y, E_z))
 end
 
 Bx(x, y, z, r, par) = -1/par.c * Ey(x, y, z, r, par)
