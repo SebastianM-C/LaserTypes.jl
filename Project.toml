@@ -16,6 +16,7 @@ GeometryTypes = "0.7, 0.8"
 HypergeometricFunctions = "0.2"
 Parameters = "0.12"
 PhysicalConstants = "0.2"
+Reexport = "0.2"
 Unitful = "1.0"
 julia = "1"
 
