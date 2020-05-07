@@ -5,15 +5,8 @@ using UnitfulAtomic
 using Parameters
 import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
-Ex = Gauss.Ex
-Ey = Gauss.Ey
-Ez = Gauss.Ez
-Bx = Gauss.Bx
-By = Gauss.By
-Bz = Gauss.Bz
-
 @testset "SI units" begin
-    p = GaussParams()
+    p = GaussLaser()
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -35,13 +28,15 @@ Bz = Gauss.Bz
     end
 
     @testset "Values at origin" begin
-        @test Ex(0u"μm", 0u"μm", p) ≈ E₀
-        @test iszero(Ey(0u"μm", 0u"μm", p))
-        @test iszero(Ez(0u"μm", 0u"μm", 0u"μm", 0u"μm", p))
+        Ex, Ey, Ez = E(0u"μm", 0u"μm", 0u"μm", p)
+        @test Ex ≈ E₀
+        @test iszero(Ey)
+        @test iszero(Ez)
 
-        @test iszero(Bx(0u"μm", 0u"μm", p))
-        @test By(0u"μm", 0u"μm", p) ≈ E₀ / c
-        @test iszero(Bz(0u"μm", 0u"μm", 0u"μm", 0u"μm", p))
+        Bx, By, Bz = B(0u"μm", 0u"μm", 0u"μm", p)
+        @test iszero(Bx)
+        @test By ≈ E₀ / c
+        @test iszero(Bz)
     end
 
     @testset "Values at z_F" begin
@@ -58,7 +53,7 @@ end
     w0 = auconvert(58u"μm")
     τ0 = auconvert(18u"fs")
 
-    p = GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -82,13 +77,15 @@ end
     end
 
     @testset "Values at origin" begin
-        @test Ex(0u"a0_au", 0u"a0_au", p) ≈ E₀
-        @test iszero(Ey(0u"a0_au", 0u"a0_au", p))
-        @test iszero(Ez(0u"a0_au", 0u"a0_au", 0u"a0_au", 0u"a0_au", p))
+        Ex, Ey, Ez = E(0u"a0_au", 0u"a0_au", 0u"a0_au", p)
+        @test Ex ≈ E₀
+        @test iszero(Ey)
+        @test iszero(Ez)
 
-        @test iszero(Bx(0u"a0_au", 0u"a0_au", p))
-        @test By(0u"a0_au", 0u"a0_au", p) ≈ E₀ / c
-        @test iszero(Bz(0u"a0_au", 0u"a0_au", 0u"a0_au", 0u"a0_au", p))
+        Bx, By, Bz = B(0u"a0_au", 0u"a0_au", 0u"a0_au", p)
+        @test iszero(Bx)
+        @test By ≈ E₀ / c
+        @test iszero(Bz)
     end
 
     @testset "Values at z_F" begin
@@ -105,7 +102,7 @@ end
     w0 = austrip(58u"μm")
     τ0 = austrip(18u"fs")
 
-    p = GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
     @unpack c, z_F, z_R, k, w₀, E₀ = p
     wz = LaserTypes.w(z_F, p)
 
@@ -115,13 +112,15 @@ end
     t₀ = 0.
 
     @testset "Values at origin" begin
-        @test Ex(0, 0, p) ≈ E₀
-        @test iszero(Ey(0, 0, p))
-        @test iszero(Ez(0, 0, 0, 0, p))
+        Ex, Ey, Ez = E(0, 0, 0, p)
+        @test Ex ≈ E₀
+        @test iszero(Ey)
+        @test iszero(Ez)
 
-        @test iszero(Bx(0, 0, p))
-        @test By(0, 0, p) ≈ E₀ / c
-        @test iszero(Bz(0, 0, 0, 0, p))
+        Bx, By, Bz = B(0, 0, 0, p)
+        @test iszero(Bx)
+        @test By ≈ E₀ / c
+        @test iszero(Bz)
     end
 
     @testset "Values at z_F" begin

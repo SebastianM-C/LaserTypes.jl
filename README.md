@@ -4,13 +4,13 @@
 
 This package aims to provide a common interface for different laser types. For the moment only the Gaussian pulse is supported, but in the future, Laguerre-Gauss and Bessel beams will be added.
 
-Each laser type has its own module. For example for the Gaussian laser pusle use:
+Each laser type has its own type. For example for the Gaussian laser pusle use:
 ```julia
 using LaserTypes
 using Unitful
 using StaticArrays
 
-p = GaussParams()
+p = GaussLaser()
 ```
 This will give the functions for the values of the electromagnetic field at a space-time point specifed by `r,t`. For example, to evaluate
 the electric field at the origin use
@@ -31,7 +31,7 @@ m = 1
 w0 = 944863.062
 τ0 = 744.144
 t₀ = 0
-p = GaussParams(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
 ```
 We can vizualize the intensity of the created electric field with Makie.jl like this:
 ```julia

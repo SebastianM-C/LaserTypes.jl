@@ -1,19 +1,4 @@
-module LaguerreGauss
-
-export LaguerreGaussParams
-
-using HypergeometricFunctions
-using Unitful
-using Parameters
-using GeometryTypes: Vec3
-import PhysicalConstants.CODATA2018: c_0, m_e, e
-using ..LaserTypes: LaserTypes, TemporalProfiles, w, g, R
-using ..Gauss
-
-const _₁F₁ = HypergeometricFunctions.drummond1F1
-const pochhammer = HypergeometricFunctions.pochhammer
-
-@with_kw struct LaguerreGaussParams{V,Q,M,L,F,C,T,P,I,W,K,E,R}
+@with_kw struct LaguerreGaussLaser{V,Q,M,L,F,C,T,P,I,W,K,E,R}
     # independent values:
     c::V = c_0
     q::Q = -e
@@ -39,11 +24,17 @@ const pochhammer = HypergeometricFunctions.pochhammer
     Nₚₘ::R = √(pochhammer(p+1, abs(m))); @assert Nₚₘ ≈ √(pochhammer(p+1, abs(m)))
 end
 
-function Ex(x, y, z, r, par)
-    @unpack Nₚₘ, w₀, φ₀, z_R, ξx, p, m = par
-    wz = w(z, par)
+function GaussLaser(laser::LaguerreGaussLaser)
+    @unpack c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀ = laser
+    GaussLaser(c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀)
+end
+
+function Ex(laser::LaguerreGaussLaser, x, y, z, r)
+    @unpack Nₚₘ, w₀, φ₀, z_R, ξx, p, m = laser
+    wz = w(z, laser)
     Rz = R(z, z_R)
-    Eg = Gauss.Ex(z, r, par)
+    gauss_laser = GaussLaser(laser)
+    Eg = Ex(gauss_laser, z, r)
     σ = (r/wz)^2
     mₐ = abs(m)
     φ = atan(x, y)
@@ -51,12 +42,9 @@ function Ex(x, y, z, r, par)
     ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*φ-φ₀))
 end
 
-Ey(x, y, z, r, par) = par.ξy / par.ξx * Ex(x, y, z, r, par)
-Ey(Ex, par) = par.ξy / par.ξx * Ex
-
-function Ez(Ex, Ey, x, y, z, r, par)
-    @unpack k, z_R, p, m = par
-    wz = w(z, par)
+function Ez(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
+    @unpack k, z_R, p, m = laser
+    wz = w(z, laser)
     mₐ = abs(m)
     ∓ = m > 0 ? (-) : +
 
@@ -67,25 +55,15 @@ function Ez(Ex, Ey, x, y, z, r, par)
         )
 end
 
-function Ez(x, y, z, r, par)
-    E_x = Ex(x,y,z,r,par)
-    Ez(E_x, Ey(E_x, par), x, y, z, r, par)
+function Bz(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
+    @unpack k, z_R, p, m, c = laser
+    wz = w(z, laser)
+    mₐ = abs(m)
+    ∓ = m > 0 ? (-) : +
+
+    -im / (c*k) * (
+        (-2*(1+im*(z/z_R))/wz^2
+        + 4p/(((mₐ+1)*wz^2) * _₁F₁(-p+1, mₐ+2, 2r^2/wz^2))) * (y*Ex + x*Ey)
+        - mₐ/(x+im*y) * (Ey ∓ im*Ex)
+        )
 end
-
-function LaserTypes.E(x, y, z, par::LaguerreGaussParams)
-    r = hypot(x, y)
-
-    E_x = Ex(x, y, z, r, par)
-    E_y = Ey(E_x, par)
-    E_z = Ez(E_x, E_y, x, y, z, r, par)
-
-    real(Vec3(E_x, E_y, E_z))
-end
-
-Bx(x, y, z, r, par) = -1/par.c * Ey(x, y, z, r, par)
-Bx(Ey, par) = -1/par.c * Ey
-
-By(x, y, z, r, par) = 1/par.c * Ex(x, y, z, r, par)
-By(Ex, par) = 1/par.c * Ex
-
-end  # module LaGuerreGauss
