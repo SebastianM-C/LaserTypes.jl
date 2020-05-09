@@ -1,7 +1,7 @@
 # # Laguerre-Gauss profile
 
 @with_kw struct LaguerreGaussLaser{V,Q,M,L,F,C,T,P,I,W,K,E,R}
-    # independent values:
+    # independent values
     c::V = c_0
     q::Q = -e
     m_q::M = m_e
