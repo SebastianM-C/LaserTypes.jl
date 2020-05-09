@@ -1,3 +1,5 @@
+# # Electric Field
+
 function Ex(laser, x, y, z, r) end
 
 Ey(laser, coords...) = laser.ξy / laser.ξx * Ex(laser, coords...)

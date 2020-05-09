@@ -1,3 +1,5 @@
+# # LaserTypes
+
 module LaserTypes
 
 export E, B, GaussLaser, LaguerreGaussLaser, TemporalProfiles

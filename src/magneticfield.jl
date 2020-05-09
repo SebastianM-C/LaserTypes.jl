@@ -1,3 +1,5 @@
+# # Magnetic Field
+
 Bx(laser, c1, c2, rest_of_coords...) = -1/laser.c * Ey(laser, c1, c2, rest_of_coords...)
 Bx(laser, Ey) = -1/laser.c * Ey
 

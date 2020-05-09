@@ -1,3 +1,5 @@
+# # 4-Potential
+
 function EB(r, t, par)
     x, y, z = r[1], r[2], r[3]
     ElectricField = E(x, y, z, par)

@@ -1,3 +1,5 @@
+# # Laguerre-Gauss profile
+
 @with_kw struct LaguerreGaussLaser{V,Q,M,L,F,C,T,P,I,W,K,E,R}
     # independent values:
     c::V = c_0
@@ -24,6 +26,11 @@
     Nₚₘ::R = √(pochhammer(p+1, abs(m))); @assert Nₚₘ ≈ √(pochhammer(p+1, abs(m)))
 end
 
+"""
+    GaussLaser(laser::LaguerreGaussLaser)
+
+Convert a `LaguerreGaussLaser` to a `GaussLaser` with the same parameters.
+"""
 function GaussLaser(laser::LaguerreGaussLaser)
     @unpack c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀ = laser
     GaussLaser(c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀)
