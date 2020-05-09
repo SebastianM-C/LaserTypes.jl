@@ -30,7 +30,7 @@ makedocs(
                 "laguerre-gauss.md"
             ]
         ),
-    ]
+    ],
     modules = [LaserTypes]
 )
 
