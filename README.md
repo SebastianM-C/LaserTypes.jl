@@ -1,14 +1,14 @@
 # LaserTypes
 [build-img]: https://github.com/SebastianM-C/LaserTypes.jl/workflows/Run%20CI%20on%20master/badge.svg
 [build-url]: https://github.com/SebastianM-C/LaserTypes.jl/actions
-[docs-img]: https://img.shields.io/badge/docs-dev-blue.svg
-[docs-url]: http://SebastianM-C.github.io/LaserTypes.jl/dev/
 [codecov-img]: https://codecov.io/gh/SebastianM-C/LaserTypes.jl/branch/master/graph/badge.svg
 [codecov-url]: https://codecov.io/gh/SebastianM-C/LaserTypes.jl
+[docs-img]: https://img.shields.io/badge/docs-dev-blue.svg
+[docs-url]: http://SebastianM-C.github.io/LaserTypes.jl/dev/
 
+[![build status][build-img]][build-url]
+[![codecov][codecov-img]][codecov-url]
 [![docs][docs-img]][docs-url]
-[![build status](build-img)](build-url)
-[![codecov](codecov-img)](codecov-url)
 
 This package aims to provide a common interface for different laser types. For the moment only the Gaussian pulse is supported, but in the future, Laguerre-Gauss and Bessel beams will be added.
 
