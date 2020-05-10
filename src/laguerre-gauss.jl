@@ -9,7 +9,7 @@ The `LaguerreGaussLaser` is defined by the following independent parameters
 - `m_q` is the mass of the charge, with the default value being the one for the electron in SI (`m_e` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
 - `λ` is the laser wavelangth with the default value 0.8μm
 - `a₀` is the normalized vector potential (defined as ``a_0=\\frac{eA}{m_e c^2}``)
-- `φ₀` is the initial phase with the default value 0.0
+- `ϕ₀` is the initial phase with the default value 0.0
 - `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist) with the default value 58.0μm
 - `ξx` and `ξy` give the polarization and have the default value `1.0 + 0im` and `0.0 + 0im`
 - `envelope` is the temporal envelope of the pulse and the default one is a Gaussian one
@@ -34,7 +34,7 @@ LaguerreGaussLaser
     m_q::M = m_e
     λ::L = 0.8u"μm"
     a₀::F = 1.0
-    φ₀::F = 0.0
+    ϕ₀::F = 0.0
     w₀::L = 58.0u"μm"
     ξx::C = 1.0 + 0im
     ξy::C = 0.0 + 0im
@@ -59,12 +59,12 @@ end
 Convert a `LaguerreGaussLaser` to a `GaussLaser` with the same parameters.
 """
 function Base.convert(::Type{GaussLaser}, laser::LaguerreGaussLaser)
-    @unpack c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀ = laser
-    GaussLaser(c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀)
+    @unpack c, q, m_q, λ, a₀, ϕ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀ = laser
+    GaussLaser(c, q, m_q, λ, a₀, ϕ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀)
 end
 
 function Ex(laser::LaguerreGaussLaser, x, y, z, r)
-    @unpack Nₚₘ, w₀, φ₀, z_R, ξx, p, m = laser
+    @unpack Nₚₘ, w₀, ϕ₀, z_R, ξx, p, m = laser
     wz = w(z, laser)
     Rz = R(z, z_R)
     gauss_laser = convert(GaussLaser, laser)
@@ -73,7 +73,7 @@ function Ex(laser::LaguerreGaussLaser, x, y, z, r)
     mₐ = abs(m)
     φ = atan(x, y)
 
-    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*φ-φ₀))
+    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*φ-ϕ₀))
 end
 
 function Ez(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
