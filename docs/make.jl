@@ -6,7 +6,7 @@ using Literate
 filepath = joinpath(@__DIR__, "..", "src")
 files = joinpath.(filepath, readdir(filepath))
 
-Literate.markdown.(files, joinpath(@__DIR__, "src", "generated"); documenter = false)
+# Literate.markdown.(files, joinpath(@__DIR__, "src", "generated"); documenter = false)
 
 makedocs(
     sitename = "LaserTypes",
@@ -22,17 +22,17 @@ makedocs(
             ],
             "temporal-profiles.md"
         ],
-        "Source code" => joinpath.("generated",
-                [
-                "LaserTypes.md",
-                "envelopes.md",
-                "electricfield.md",
-                "magneticfield.md",
-                "potential.md",
-                "gauss.md",
-                "laguerre-gauss.md"
-            ]
-        ),
+        # "Source code" => joinpath.("generated",
+        #         [
+        #         "LaserTypes.md",
+        #         "envelopes.md",
+        #         "electricfield.md",
+        #         "magneticfield.md",
+        #         "potential.md",
+        #         "gauss.md",
+        #         "laguerre-gauss.md"
+        #     ]
+        # ),
     ],
     modules = [LaserTypes]
 )
