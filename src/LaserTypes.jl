@@ -26,7 +26,14 @@ R(z, z_R) = z + z_R^2 / z
 """
     g(z, t, par)
 
-The time dependent part of the laser pulse.
+The time dependence of the fields is given by
+```math
+g(z, t) = \\exp(\\mathrm{i} \\omega t) envelope(z, t),
+```
+where
+- ``\\omega`` is the angular frequency of the laser pulse
+- ``envelope(z, t)`` is a function that can be used to control the duration of the pulse
+
 """
 function g(z, t, par)
     @unpack envelope, ω = par
