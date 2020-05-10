@@ -16,10 +16,10 @@ The `GaussLaser` is defined by the following independent parameters
 
 During the initialization of the `GaussLaser` type, some useful derived values are
 also computed
-- `ω` is the angular frequency and is given by ``2\\pi \\frac{c}{\\lambda}``
-- `k` is the wavenumber and is given by ``\\frac{2\\pi}{\\lambda}``
-- `z_R` is the [Rayleigh range](https://en.wikipedia.org/wiki/Rayleigh_length) and is given by ``\\frac{k w_0^2}{2}``
-- `T₀` is the laser period and is given by ``\\frac{2\\pi}{\\omega}``
+- `ω` is the angular frequency and is given by ``2π c / λ``
+- `k` is the wavenumber and is given by ``2π / λ``
+- `z_R` is the [Rayleigh range](https://en.wikipedia.org/wiki/Rayleigh_length) and is given by ``k w_0^2 / 2``
+- `T₀` is the laser period and is given by ``2π / ω``
 - `E₀` is the amplitude of the electric field and is given by ``a_0\\frac{m_q c \\omega}{q}``
 """
 GaussLaser

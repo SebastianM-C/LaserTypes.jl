@@ -12,8 +12,8 @@ Laguerre-Gauss laser pulse. The spatial profile of the electric field is given b
 ```
 where
 - ``E_g`` is the amplitude of the electric field form the [Gaussian profile](@ref gaussian), ``E_x(r,z)``
-- ``₁F₁(-p,|m|+1;z)`` is the confluent hypergeometric function
-- ``\xi_x`` and ``\xi_y`` give the polarization (choosing ``\xi_x=1`` and ``\xi_y=0`` for example, would give a linearly polarized field along the ``x`` axis while taking both ``1/\sqrt{2}`` would give circular polarization)
+- ``₁F₁(α,β;z)`` is the [confluent hypergeometric function of the first kind](https://en.wikipedia.org/wiki/Confluent_hypergeometric_function#Kummer's_equation)
+- ``ξ_x`` and ``ξ_y`` give the polarization (choosing ``ξ_x=1`` and ``ξ_y=0`` for example, would give a linearly polarized field along the ``x`` axis while taking both ``1/\sqrt{2}`` would give circular polarization)
 - ``w = w(z)`` is the beam radius at ``z``
 - ``w_0`` is the [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist)
 - ``k`` is the wavenumber
