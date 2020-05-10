@@ -16,8 +16,11 @@ makedocs(
     pages = [
         "index.md",
         "Laser profiles" => [
-            "Gaussian profile" => "gauss.md",
-            "Laguerre-Gauss profile" => "laguerre-gauss.md"
+            "Spatial profiles" => [
+                "Gaussian profile" => "gauss.md",
+                "Laguerre-Gauss profile" => "laguerre-gauss.md"
+            ],
+            "temporal-profiles.md"
         ],
         "Source code" => joinpath.("generated",
                 [
