@@ -4,6 +4,7 @@ authors = ["Sebastian Micluța-Câmpeanu <m.c.sebastian95@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 GeometryTypes = "4d00f742-c7ba-57c2-abde-4428a4b178cb"
 HypergeometricFunctions = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"

@@ -45,29 +45,33 @@ GaussLaser
     E₀::E = a₀ * m_q * c * ω / abs(q); @assert E₀ ≈ a₀ * m_q * c * ω / abs(q)
 end
 
-@inline Ex(laser::GaussLaser, x, y, z, r) = Ex(laser, z, r)
+function required_coords(laser::GaussLaser, r)
+    PolarFromCartesian()(Vec2(r[1], r[2]))
+end
 
-function Ex(laser::GaussLaser, z, r)
+function Ex(laser::GaussLaser, coords)
     @unpack E₀, w₀, k, z_R, ϕ₀, ξx = laser
+    @unpack r, z = coords
+
     wz = w(z, laser)
     Rz = R(z, z_R)
 
     ξx * E₀ * w₀/wz * exp(-im*k*z - (r/wz)^2 - im*((k*r^2)/(2Rz) - atan(z, z_R) - ϕ₀))
 end
 
-@inline Ez(laser::GaussLaser, Ex, Ey, x, y, z, r) = Ez(laser, Ex, Ey, x, y, z)
-
-function Ez(laser::GaussLaser, Ex, Ey, x, y, z)
+function Ez(laser::GaussLaser, coords, Ex, Ey, x, y)
     @unpack k, z_R = laser
+    z = coords.z
+
     wz = w(z, laser)
 
     2(im - z/z_R) / (k*wz^2) * (x*Ex + y*Ey)
 end
 
-@inline Bz(laser::GaussLaser, Ex, Ey, x, y, z, r) = Bz(laser, Ex, Ey, x, y, z)
-
-function Bz(laser::GaussLaser, Ex, Ey, x, y, z)
+function Bz(laser::GaussLaser, coords, Ex, Ey, x, y)
     @unpack k, z_R, c = laser
+    z = coords.z
+
     wz = w(z, laser)
 
     2(im - z/z_R) / (c*k*wz^2) * (y*Ex - x*Ey)
