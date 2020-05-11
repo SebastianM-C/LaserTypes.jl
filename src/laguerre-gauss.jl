@@ -82,7 +82,7 @@ function Ez(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
     -im / k * (
         (-2*(1+im*(z/z_R))/wz^2
         + 4p/(((mₐ+1)*wz^2) * _₁F₁(-p+1, mₐ+2, 2r^2/wz^2))) * (x*Ex + y*Ey)
-        - mₐ/(x+im*y) * (Ex ∓ im*Ey)
+        - (!iszero(m) ? mₐ/(x+im*y) * (Ex ∓ im*Ey) : zero(typeof(Ex))/oneunit(typeof(x)))
         )
 end
 
@@ -95,6 +95,6 @@ function Bz(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
     -im / (c*k) * (
         (-2*(1+im*(z/z_R))/wz^2
         + 4p/(((mₐ+1)*wz^2) * _₁F₁(-p+1, mₐ+2, 2r^2/wz^2))) * (y*Ex + x*Ey)
-        - mₐ/(x+im*y) * (Ey ∓ im*Ex)
+        - (!iszero(m) ? mₐ/(x+im*y) * (Ey ∓ im*Ex) : zero(typeof(Ex))/oneunit(typeof(x)))
         )
 end

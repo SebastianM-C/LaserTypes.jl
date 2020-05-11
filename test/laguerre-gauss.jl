@@ -29,13 +29,13 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
     @testset "Values at origin" begin
         Ex, Ey, Ez = E(0u"μm", 0u"μm", 0u"μm", p)
-        @test_broken iszero(Ex)
+        @test Ex ≈ E₀
         @test iszero(Ey)
-        @test_broken iszero(Ez)
+        @test iszero(Ez)
 
         Bx, By, Bz = B(0u"μm", 0u"μm", 0u"μm", p)
         @test iszero(Bx)
         @test By ≈ E₀ / c
-        @test_broken iszero(Bz)
+        @test iszero(Bz)
     end
 end
