@@ -24,6 +24,6 @@ function B(x, y, z, laser)
     real(Vec3(B_x, B_y, B_z))
 end
 
-B(x, y, z, t, laser) = B(x, y, z, laser) * real(g(z, t, laser))
+B(x, y, z, t, laser) = B(x, y, z, laser) * g(z, t, laser)
 
 B(r, t, laser) = B(r[1], r[2], r[3], t, laser)

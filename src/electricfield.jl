@@ -20,6 +20,6 @@ function E(x, y, z, laser)
     real(Vec3(E_x, E_y, E_z))
 end
 
-E(x, y, z, t, laser) = E(x, y, z, laser) * real(g(z, t, laser))
+E(x, y, z, t, laser) = E(x, y, z, laser) * g(z, t, laser)
 
 E(r, t, laser) = E(r[1], r[2], r[3], t, laser)
