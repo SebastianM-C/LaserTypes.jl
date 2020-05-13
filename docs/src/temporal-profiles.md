@@ -5,4 +5,5 @@ is given by the combination of the spatial part together with the time dependenc
 ```@autodocs
 Modules = [LaserTypes]
 Pages = ["src/envelopes.jl"]
+Order = [:function, :type]
 ```
