@@ -7,24 +7,20 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
 @testset "SI units" begin
     p = LaguerreGaussLaser()
-    @unpack c, z_F, z_R, k, w₀, E₀ = p
-    wz = LaserTypes.w(z_F, p)
+    @unpack c, profile, z_R, k, w₀, E₀ = p
+    z₀ = profile.z₀
+    wz = LaserTypes.w(z₀, p)
 
     @test unit(c) == u"m/s"
     @test unit(k) == u"μm^-1"
     @test unit(z_R) == u"μm"
 
-    x₀ = SVector{3}(0u"μm",0u"μm",z_F)
+    x₀ = SVector{3}(0u"μm",0u"μm",z₀)
     t₀ = 0u"s"
 
     @testset "Dimensions" begin
         @test all(dimension.(E(x₀,t₀,p)) .== Ref(dimension(u"V/m")))
         @test all(dimension.(B(x₀,t₀,p)) .== Ref(dimension(u"T")))
-    end
-
-    @testset "Units" begin
-        @test all(unit.(E(x₀,t₀,p)) .== unit(p.E₀))
-        @test all(unit.(B(x₀,t₀,p)) .== unit(p.E₀/c))
     end
 
     @testset "Values at origin" begin

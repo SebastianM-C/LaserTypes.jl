@@ -7,24 +7,20 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
 @testset "SI units" begin
     p = GaussLaser()
-    @unpack c, z_F, z_R, k, w₀, E₀ = p
-    wz = LaserTypes.w(z_F, p)
+    @unpack c, profile, z_R, k, w₀, E₀ = p
+    z₀ = profile.z₀
+    wz = LaserTypes.w(z₀, p)
 
     @test unit(c) == u"m/s"
     @test unit(k) == u"μm^-1"
     @test unit(z_R) == u"μm"
 
-    x₀ = SVector{3}(0u"μm",0u"μm",z_F)
+    x₀ = SVector{3}(0u"μm",0u"μm",z₀)
     t₀ = 0u"s"
 
     @testset "Dimensions" begin
         @test all(dimension.(E(x₀,t₀,p)) .== Ref(dimension(u"V/m")))
         @test all(dimension.(B(x₀,t₀,p)) .== Ref(dimension(u"T")))
-    end
-
-    @testset "Units" begin
-        @test all(unit.(E(x₀,t₀,p)) .== unit(p.E₀))
-        @test all(unit.(B(x₀,t₀,p)) .== unit(p.E₀/c))
     end
 
     @testset "Values at origin" begin
@@ -39,9 +35,9 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
         @test iszero(Bz)
     end
 
-    @testset "Values at z_F" begin
-        @test E(x₀,t₀,p) ≈ [E₀*w₀/wz*real(exp(-im*k*z_F+im*atan(z_F,z_R))), 0u"V/m", 0u"V/m"]
-        @test B(x₀,t₀,p) ≈ [0u"T", E₀*w₀/wz*real(exp(-im*k*z_F+im*atan(z_F,z_R)))/c, 0u"T"]
+    @testset "Values at z₀" begin
+        @test E(x₀,t₀,p) ≈ [E₀*w₀/wz*real(exp(-im*k*z₀+im*atan(z₀,z_R))), 0u"V/m", 0u"V/m"]
+        @test B(x₀,t₀,p) ≈ [0u"T", E₀*w₀/wz*real(exp(-im*k*z₀+im*atan(z₀,z_R)))/c, 0u"T"]
     end
 end
 
@@ -51,11 +47,12 @@ end
     m = auconvert(m_e)
     λ = auconvert(800u"nm")
     w0 = auconvert(58u"μm")
-    τ0 = auconvert(18u"fs")
+    τ = auconvert(18u"fs")
 
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
-    @unpack c, z_F, z_R, k, w₀, E₀ = p
-    wz = LaserTypes.w(z_F, p)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussianProfile(c=c,τ=τ))
+    @unpack c, profile, z_R, k, w₀, E₀ = p
+    z₀ = profile.z₀
+    wz = LaserTypes.w(z₀, p)
 
     @test unit(c) == u"a0_au*Eh_au/ħ_au"
     @test unit(k) == u"a0_au^-1"
@@ -63,17 +60,12 @@ end
 
     @test p.ω ≈ 0.05695419u"Eh_au/ħ_au"
 
-    x₀ = SVector{3}(0u"a0_au",0u"a0_au",z_F)
+    x₀ = SVector{3}(0u"a0_au",0u"a0_au",z₀)
     t₀ = 0u"ħ_au/Eh_au"
 
     @testset "Dimensions" begin
         @test all(dimension.(E(x₀,t₀,p)) .== Ref(dimension(u"V/m")))
         @test all(dimension.(B(x₀,t₀,p)) .== Ref(dimension(u"T")))
-    end
-
-    @testset "Units" begin
-        @test all(unit.(E(x₀,t₀,p)) .== unit(p.E₀))
-        @test all(unit.(B(x₀,t₀,p)) .== unit(p.E₀/c))
     end
 
     @testset "Values at origin" begin
@@ -88,9 +80,9 @@ end
         @test iszero(Bz)
     end
 
-    @testset "Values at z_F" begin
-        @test E(x₀,t₀,p) ≈ [E₀*w₀/wz*real(exp(-im*k*z_F+im*atan(z_F,z_R))), 0u"V/m", 0u"V/m"]
-        @test B(x₀,t₀,p) ≈ [0u"T", E₀*w₀/wz*real(exp(-im*k*z_F+im*atan(z_F,z_R)))/c, 0u"T"]
+    @testset "Values at z₀" begin
+        @test E(x₀,t₀,p) ≈ [E₀*w₀/wz*real(exp(-im*k*z₀+im*atan(z₀,z_R))), 0u"V/m", 0u"V/m"]
+        @test B(x₀,t₀,p) ≈ [0u"T", E₀*w₀/wz*real(exp(-im*k*z₀+im*atan(z₀,z_R)))/c, 0u"T"]
     end
 end
 
@@ -100,15 +92,16 @@ end
     m = 1
     λ = austrip(800u"nm")
     w0 = austrip(58u"μm")
-    τ0 = austrip(18u"fs")
+    τ = austrip(18u"fs")
 
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
-    @unpack c, z_F, z_R, k, w₀, E₀ = p
-    wz = LaserTypes.w(z_F, p)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussianProfile(c=c,τ=τ))
+    @unpack c, profile, z_R, k, w₀, E₀ = p
+    z₀ = profile.z₀
+    wz = LaserTypes.w(z₀, p)
 
     @test p.ω ≈ 0.05695419
 
-    x₀ = SVector{3}(0, 0, z_F)
+    x₀ = SVector{3}(0, 0, z₀)
     t₀ = 0.
 
     @testset "Values at origin" begin
@@ -123,8 +116,8 @@ end
         @test iszero(Bz)
     end
 
-    @testset "Values at z_F" begin
-        @test E(x₀,t₀,p) ≈ [E₀*w₀/wz*real(exp(-im*k*z_F+im*atan(z_F,z_R))), 0, 0]
-        @test B(x₀,t₀,p) ≈ [0, E₀*w₀/wz*real(exp(-im*k*z_F+im*atan(z_F,z_R)))/c, 0]
+    @testset "Values at z₀" begin
+        @test E(x₀,t₀,p) ≈ [E₀*w₀/wz*real(exp(-im*k*z₀+im*atan(z₀,z_R))), 0, 0]
+        @test B(x₀,t₀,p) ≈ [0, E₀*w₀/wz*real(exp(-im*k*z₀+im*atan(z₀,z_R)))/c, 0]
     end
 end

@@ -12,7 +12,7 @@ The `LaguerreGaussLaser` is defined by the following independent parameters
 - `φ₀` is the initial phase with the default value 0.0
 - `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist) with the default value 58.0μm
 - `ξx` and `ξy` give the polarization and have the default value `1.0 + 0im` and `0.0 + 0im`
-- `envelope` is the temporal envelope of the pulse and the default one is a Gaussian one
+- `profile` is the temporal profile of the pulse and the default one is a Gaussian one
 
 During the initialization of the `LaguerreGaussLaser` type, some useful derived values are
 also computed
@@ -36,16 +36,14 @@ LaguerreGaussLaser
     ξx::C = 1.0 + 0im
     ξy::C = 0.0 + 0im
     @assert hypot(ξx, ξy) ≈ 1
-    τ₀::T = 18.02u"fs"
-    z_F::L = uconvert(unit(λ), -4*τ₀*c)
-    envelope::P = TemporalProfiles.gaussian
+    profile::P = GaussianProfile(c=c)
     p::I = 1
     m::I = 0
     # derived values
     ω::W = 2π * c / λ; @assert ω ≈ 2π * c / λ
     k::K = 2π / λ; @assert k ≈ 2π / λ
     z_R::L = w₀^2 * k / 2; @assert z_R ≈ w₀^2 * k / 2
-    T₀::T = uconvert(unit(τ₀), 2π / ω); @assert T₀ ≈ 2π / ω
+    T₀::T = 2π / ω; @assert T₀ ≈ 2π / ω
     E₀::E = a₀ * m_q * c * ω / abs(q); @assert E₀ ≈ a₀ * m_q * c * ω / abs(q)
     Nₚₘ::R = √(pochhammer(p+1, abs(m))); @assert Nₚₘ ≈ √(pochhammer(p+1, abs(m)))
 end
@@ -56,8 +54,8 @@ end
 Convert a `LaguerreGaussLaser` to a `GaussLaser` with the same parameters.
 """
 function GaussLaser(laser::LaguerreGaussLaser)
-    @unpack c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀ = laser
-    GaussLaser(c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, τ₀, z_F, envelope, ω, k, z_R, T₀, E₀)
+    @unpack c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀ = laser
+    GaussLaser(c, q, m_q, λ, a₀, φ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
 end
 
 function Ex(laser::LaguerreGaussLaser, x, y, z, r)

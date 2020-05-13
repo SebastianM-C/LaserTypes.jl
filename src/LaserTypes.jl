@@ -2,7 +2,7 @@
 
 module LaserTypes
 
-export E, B, GaussLaser, LaguerreGaussLaser, TemporalProfiles
+export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussianProfile, QuasiRectangularProfile
 
 using Parameters
 
@@ -22,24 +22,6 @@ function w(z, par)
 end
 
 R(z, z_R) = z + z_R^2 / z
-
-"""
-    g(z, t, par)
-
-The time dependence of the fields is given by
-```math
-g(z, t) = \\exp(\\mathrm{i} \\omega t) envelope(z, t),
-```
-where
-- ``\\omega`` is the angular frequency of the laser pulse
-- ``envelope(z, t)`` is a function that can be used to control the duration of the pulse
-
-"""
-function g(z, t, par)
-    @unpack envelope, ω = par
-
-    exp(im*ω*t) * envelope(z, t, par)
-end
 
 include("envelopes.jl")
 include("electricfield.jl")
