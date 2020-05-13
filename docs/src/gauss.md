@@ -34,6 +34,7 @@ Modules = [LaserTypes]
 Pages = ["src/gauss.jl"]
 Order = [:type]
 ```
+!!! note Choice of normalization
 The electric field is normalized such that in origin (with the default linear polarization) we obtain
 ```math
 \vec{E}(0,0,0) = (E_0,0,0)\,,

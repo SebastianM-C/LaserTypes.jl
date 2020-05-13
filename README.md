@@ -37,9 +37,9 @@ q = -1
 m = 1
 λ = 15117.8089
 w0 = 944863.062
-τ0 = 744.144
+τ = 744.144
 t₀ = 0
-p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, τ₀=τ0)
+p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussianProfile(c=c,τ=τ))
 ```
 We can vizualize the intensity of the created electric field with Makie.jl like this:
 ```julia

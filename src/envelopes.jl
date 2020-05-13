@@ -18,9 +18,13 @@ struct ConstantProfile end
 This envelope provides a finite duration for the laser pulse and thus can provide a more
 realistic description of an actual laser pulse.
 ```math
-envelope(z, t) = \\exp\\left[-\\left(\\frac{t-\\frac{z-z_F}{c}}{\\tau_0}\\right)^2\\right],
+envelope(z, t) = \\cosh\\left[\\left(\\frac{\\varphi}{\\tau})\\right)^2\\right],
 ```
 where
+```math
+\\varphi = (t - t_0) - \\frac{z - z_0}{c} ,
+```
+and
 - `c` is the speed of light
 - `τ` is the duration of the pulse (FWHM) and has the default value 18.02fs
 - `t₀` is the origin of the time axis and it is 0 by default
