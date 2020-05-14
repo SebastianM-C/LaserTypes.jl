@@ -1,7 +1,7 @@
 ### [Gaussian profile](@id gaussian)
 
 The `GaussLaser` type contains the parameters required for describing a
-[Gaussian laser pulse](https://en.wikipedia.org/wiki/Gaussian_beam). The spatial profile of the electric field is given by
+[Gaussian laser](https://en.wikipedia.org/wiki/Gaussian_beam) pulse. The spatial profile of the electric field is given by
 ```math
 \newcommand{\ii}{\mathrm{i}}                % imaginary unit
 \begin{aligned}
@@ -12,7 +12,7 @@ The `GaussLaser` type contains the parameters required for describing a
 ```
 where
 - ``E_0`` is the amplitude of the electric field
-- ``\xi_x`` and ``\xi_y`` give the polarization (choosing ``\xi_x=1`` and ``\xi_y=0`` for example, would give a linearly polarized field along the ``x`` axis while taking both ``1/\sqrt{2}`` would give circular polarization)
+- ``ξ_x`` and ``ξ_y`` give the polarization (choosing ``ξ_x=1`` and ``ξ_y=0`` for example, would give a linearly polarized field along the ``x`` axis while taking them ``1/\sqrt{2}`` and ``±\mathrm{i}/\sqrt{2}``would give right and left-handed circular polarization)
 - ``w = w(z)`` is the beam radius at ``z``
 - ``w_0`` is the [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist)
 - ``k`` is the wavenumber
@@ -34,9 +34,11 @@ Modules = [LaserTypes]
 Pages = ["src/gauss.jl"]
 Order = [:type]
 ```
-!!! note Choice of normalization
-The electric field is normalized such that in origin (with the default linear polarization) we obtain
-```math
-\vec{E}(0,0,0) = (E_0,0,0)\,,
-```
-when the temporal profile is ignored (or constant and equal to unity).
+!!! note "Choice of normalization"
+
+    The electric field is normalized such that in origin (with the default linear polarization) we obtain
+    ```math
+    \vec{E}(0,0,0) = (E_0,0,0),
+    ```
+    when the temporal profile is ignored (or [`ConstantProfile`](@ref)) and thus
+    ``E_0`` is indeed the amplitude of the electric field.
