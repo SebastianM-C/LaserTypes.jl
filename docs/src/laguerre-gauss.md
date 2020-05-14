@@ -7,7 +7,7 @@ The `LaguerreGaussLaser` type contains the parameters required for describing a
 \begin{aligned}
     E_x(r,z,φ) &= ξ_x E_g N_{pm} \left(\frac{\sqrt{2}r}{w(z)}\right)^{|m|} ₁F₁\left(-p, |m|+1; 2\left(\frac{r}{w(z)}\right)^2\right) \exp\left[\ii\left((2p+|m|)\arctg{\frac{z}{z_R}}-mφ - \phi_0\right)\right] \\
     E_y(r,z,φ) &= \frac{ξ_y}{ξ_x} E_x(r,z,φ) \\
-    E_z(r,z,φ) &= -\frac{\ii}{k} \left\{\left[-2\frac{1+\ii\frac{z}{z_0}}{w^2(z)} + \frac{4p}{(|m|+1)w(z)^2}\ ₁F₁^{-1}\left(-p, |m|+1; 2\left(\frac{r}{w(z)}\right)^2\right)\right](x E_x + y E_y) - \frac{|m|}{x+\ii y} (E_x \mp \ii E_y)\right\}
+    E_z(r,z,φ) &= -\frac{\ii}{k} \left\{\left[-2\frac{1+\ii\frac{z}{z_0}}{w(z)^2} + \frac{4p}{(|m|+1)w(z)^2}\ ₁F₁^{-1}\left(-p, |m|+1; 2\left(\frac{r}{w(z)}\right)^2\right)\right](x E_x + y E_y) - \frac{|m|}{x+\ii y} (E_x \mp \ii E_y)\right\}
 \end{aligned}
 ```
 where
@@ -17,7 +17,7 @@ where
 - ``p`` is the radial index of the mode, ``p ∈ ℤ, p ≥ 0``
 - ``m`` is the azimuthal index of the mode, ``m ∈ ℤ``
 - ``ξ_x`` and ``ξ_y`` give the polarization (choosing ``ξ_x=1`` and ``ξ_y=0`` for example, would give a linearly polarized field along the ``x`` axis while taking them ``1/\sqrt{2}`` and ``±\mathrm{i}/\sqrt{2}`` would give right and left-handed circular polarization)
-- ``w = w(z)`` is the beam radius at ``z``
+- ``w(z)`` is the beam radius at ``z``
 - ``w_0`` is the [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist)
 - ``k`` is the wavenumber
 - ``R`` is the radius of curvature
