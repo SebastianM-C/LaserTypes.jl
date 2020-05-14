@@ -6,7 +6,7 @@ function E(r, laser)
     E(x, y, coords, laser)
 end
 
-E(r, t, laser) = E(r, laser) * real(g(r[3], t, laser))
+E(r, t, laser) = E(r, laser) * g(r[3], t, laser)
 
 function E(x, y, coords, laser)
     E_x = Ex(laser, coords)
