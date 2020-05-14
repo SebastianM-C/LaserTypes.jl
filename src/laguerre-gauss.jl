@@ -13,8 +13,8 @@ The `LaguerreGaussLaser` is defined by the following independent parameters
 - `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist) with the default value 58.0μm
 - `ξx` and `ξy` give the polarization and have the default value `1.0 + 0im` and `0.0 + 0im`
 - `profile` is the temporal profile of the pulse and the default one is a Gaussian one
-- `p` with the default value 1
-- `m` with the default value 0
+- `p` is the radial index of the mode, ``p ∈ ℤ, p ≥ 0``, with the default value 1
+- `m` is the azimuthal index of the mode, ``m ∈ ℤ``, with the default value 0
 
 During the initialization of the `LaguerreGaussLaser` type, some useful derived values are
 also computed
