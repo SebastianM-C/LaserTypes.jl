@@ -39,7 +39,7 @@ LaguerreGaussLaser
     ξx::C = 1.0 + 0im
     ξy::C = 0.0 + 0im
     @assert hypot(ξx, ξy) ≈ 1
-    profile::P = GaussianProfile(c=c)
+    profile::P = GaussProfile(c=c)
     p::I = 1
     m::I = 0
     # derived values

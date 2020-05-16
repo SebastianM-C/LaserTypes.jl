@@ -36,7 +36,7 @@ GaussLaser
     ξx::C = 1.0 + 0im
     ξy::C = 0.0 + 0im
     @assert hypot(ξx, ξy) ≈ 1
-    profile::P = GaussianProfile(c=c)
+    profile::P = GaussProfile(c=c)
     # derived values
     ω::W = 2π * c / λ; @assert ω ≈ 2π * c / λ
     k::K = 2π / λ; @assert k ≈ 2π / λ

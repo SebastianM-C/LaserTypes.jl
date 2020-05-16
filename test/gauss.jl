@@ -49,7 +49,7 @@ end
     w0 = auconvert(58u"μm")
     τ = auconvert(18u"fs")
 
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussianProfile(c=c,τ=τ))
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
     @unpack c, profile, z_R, k, w₀, E₀ = p
     z₀ = profile.z₀
     wz = LaserTypes.w(z₀, p)
@@ -94,7 +94,7 @@ end
     w0 = austrip(58u"μm")
     τ = austrip(18u"fs")
 
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussianProfile(c=c,τ=τ))
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
     @unpack c, profile, z_R, k, w₀, E₀ = p
     z₀ = profile.z₀
     wz = LaserTypes.w(z₀, p)
