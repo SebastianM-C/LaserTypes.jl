@@ -7,8 +7,8 @@ using UnitfulAtomic
     units = [:SI_unitful, :atomic_unitful, :SI, :atomic]
     x₀ = SVector{3}(0u"μm",0u"μm",0u"μm")
     t₀ = 0u"s"
-    x = [x₀, auconvert.(x₀), ustrip.(x₀), ustrip.(auconvert.(x₀))]
-    t = [t₀, auconvert(t₀), ustrip.(t₀), ustrip.(auconvert.(t₀))]
+    x = (x₀, auconvert.(x₀), ustrip.(x₀), ustrip.(auconvert.(x₀)))
+    t = (t₀, auconvert(t₀), ustrip(t₀), ustrip(auconvert.(t₀)))
 
     @testset "$unit" for (unit, xᵢ, tᵢ) in zip(units, x, t)
         s = setup_laser(GaussLaser, unit, profile=ConstantProfile())
