@@ -13,7 +13,7 @@ call this a laser pusle since a pulse implicitely has a finite duration).
 struct ConstantProfile end
 
 @doc """
-    GaussianProfile{V,T,L}
+    GaussProfile{V,T,L}
 
 This envelope provides a finite duration for the laser pulse and thus can provide a more
 realistic description of an actual laser pulse.
@@ -30,9 +30,9 @@ and
 - `t₀` is the origin of the time axis and it is 0 by default
 - `z₀` is the initial position of the intensity peak and has the default value `-4*τ*c`
 """
-GaussianProfile
+GaussProfile
 
-@with_kw struct GaussianProfile{V,T,L}
+@with_kw struct GaussProfile{V,T,L}
     c::V = c_0
     τ::T = 18.02u"fs"
     t₀::T = zero(τ)
@@ -96,7 +96,7 @@ end
 
 envelope(::ConstantProfile, z, t) = 1
 
-function envelope(profile::GaussianProfile, z, t)
+function envelope(profile::GaussProfile, z, t)
     @unpack c, τ, t₀, z₀ = profile
     φ = (t - t₀) - (z - z₀) / c
 

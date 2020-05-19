@@ -2,11 +2,13 @@
 
 module LaserTypes
 
-export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussianProfile, QuasiRectangularProfile
+export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussProfile,
+    QuasiRectangularProfile, setup_laser
 
 using Parameters
 
 using Unitful
+using UnitfulAtomic
 using Parameters
 using GeometryTypes: Vec3
 import PhysicalConstants.CODATA2018: c_0, m_e, e
@@ -29,5 +31,6 @@ include("magneticfield.jl")
 include("potential.jl")
 include("gauss.jl")
 include("laguerre-gauss.jl")
+include("setup.jl")
 
 end # module

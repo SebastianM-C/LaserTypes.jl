@@ -27,25 +27,25 @@ also computed
 """
 LaguerreGaussLaser
 
-@with_kw struct LaguerreGaussLaser{V,Q,M,L,F,C,T,P,I,W,K,E,R}
+@with_kw struct LaguerreGaussLaser{V,Q,M,L1,L2,L3,F,C,T,P,I,W,K,E,R}
     # independent values
     c::V = c_0
     q::Q = -e
     m_q::M = m_e
-    λ::L = 0.8u"μm"
+    λ::L1 = 0.8u"μm"
     a₀::F = 1.0
     ϕ₀::F = 0.0
-    w₀::L = 58.0u"μm"
+    w₀::L2 = 58.0u"μm"
     ξx::C = 1.0 + 0im
     ξy::C = 0.0 + 0im
     @assert hypot(ξx, ξy) ≈ 1
-    profile::P = GaussianProfile(c=c)
+    profile::P = GaussProfile(c=c)
     p::I = 1
     m::I = 0
     # derived values
     ω::W = 2π * c / λ; @assert ω ≈ 2π * c / λ
     k::K = 2π / λ; @assert k ≈ 2π / λ
-    z_R::L = w₀^2 * k / 2; @assert z_R ≈ w₀^2 * k / 2
+    z_R::L3 = w₀^2 * k / 2; @assert z_R ≈ w₀^2 * k / 2
     T₀::T = 2π / ω; @assert T₀ ≈ 2π / ω
     E₀::E = a₀ * m_q * c * ω / abs(q); @assert E₀ ≈ a₀ * m_q * c * ω / abs(q)
     Nₚₘ::R = √(pochhammer(p+1, abs(m))); @assert Nₚₘ ≈ √(pochhammer(p+1, abs(m)))
