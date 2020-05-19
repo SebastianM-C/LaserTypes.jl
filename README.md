@@ -10,43 +10,38 @@
 [![codecov][codecov-img]][codecov-url]
 [![docs][docs-img]][docs-url]
 
-This package aims to provide a common interface for different laser types. For the moment only the Gaussian pulse is supported, but in the future, Laguerre-Gauss and Bessel beams will be added.
+This package aims to provide a common interface for different laser types. For the spatial profiles
+supported are Gauss and Laguerre-Gauss (with more to be added in the future)
 
-Each laser type has its own type. For example for the Gaussian laser pusle use:
+The `setup_laser` function can be used to initialize the parameters for the laser
+depending on the laser type and units. For example for the Gaussian laser pusle in SI units use:
 ```julia
 using LaserTypes
 using Unitful
 using StaticArrays
 
-p = GaussLaser()
+s = setup_laser(GaussLaser, :SI)
 ```
-This will give the functions for the values of the electromagnetic field at a space-time point specifed by `r,t`. For example, to evaluate
-the electric field at the origin use
+This will create a structure containing all the parameters required to describe the laser.
+The `E` and `B` functions give the value of the electromagnetic fields at a space-time point specified by `r,t`.
+For example, to evaluate the electric field at the origin use
 ```julia
-x₀ = SVector{3}(0u"μm",0u"μm",0u"μm")
-t₀ = 0u"s"
-
-E(x₀, t₀, p)
-```
-
-The package does not impose the use of units, but by default the laser parameters are initialized in SI.
-For example with regular `Float64` number, the laser initialization would look like this:
-```julia
-c = 137.035
-q = -1
-m = 1
-λ = 15117.8089
-w0 = 944863.062
-τ = 744.144
+x₀ = SVector{3}(0,0,0)
 t₀ = 0
-p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
+
+E(x₀, t₀, s)
 ```
-We can vizualize the intensity of the created electric field with Makie.jl like this:
+
+We can visualize the intensity of the created electric field with [Makie.jl](https://github.com/JuliaPlots/Makie.jl) like this:
 ```julia
 using Makie
 using LinearAlgebra
 
-f(x,y) = norm(E(Point3f0(x*10^6,y*10^6,p.z_F), 1, p))
+f(x,y) = norm(E(Point3f0(x*10^6,y*10^6,s.z_F), 1, s))
 surface(-5:0.1:5, -5:0.1:5, f)
 ```
 ![gauss](assets/gauss.png)
+
+The package can also work with [Unitful.jl](https://github.com/PainterQubits/Unitful.jl) and [UnitfulAtomic.jl](https://github.com/sostock/UnitfulAtomic.jl) units. For those
+you just need to initialize the laser using `:SI_unitful` or `:atomic_unitful`
+and use the corresponding units for the coordinates.
