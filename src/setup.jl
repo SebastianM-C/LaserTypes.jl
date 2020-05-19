@@ -10,7 +10,7 @@ function setup_laser(laser, units; τ=nothing, kwargs...)
     if τ ≡ nothing
         τ = duration(Val(units))
     end
-    profile = get(kwargs, :profile, GaussProfile(τ=τ))
+    profile = get(kwargs, :profile, GaussProfile(c=c, τ=τ))
 
     others = Dict{Symbol,Any}()
     excluded = [:c, :q, :m_q, :λ, :w₀, :profile]
@@ -33,7 +33,7 @@ common_parameters(::Val{:SI}) = ustrip.(u"m", common_parameters(Val(:SI_unitful)
 common_parameters(::Val{:atomic_unitful}) = auconvert.(common_parameters(Val(:SI_unitful)))
 common_parameters(::Val{:atomic}) = ustrip.(common_parameters(Val(:atomic_unitful)))
 
-duration(::Val{:SI_unitful}) = 18.02u"fs"
+duration(::Val{:SI_unitful}) = 18.0u"fs"
 duration(::Val{:SI}) = ustrip.(u"s", duration(Val(:SI_unitful)))
 duration(::Val{:atomic_unitful}) = auconvert.(duration(Val(:SI_unitful)))
 duration(::Val{:atomic}) = ustrip.(duration(Val(:atomic_unitful)))

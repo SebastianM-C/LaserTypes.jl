@@ -2,36 +2,24 @@ using LaserTypes, Test
 using Unitful
 using StaticArrays
 using UnitfulAtomic
-using Parameters
-import PhysicalConstants.CODATA2018: c_0, m_e, e, α
 
-@testset "SI units" begin
-    p = LaguerreGaussLaser()
-    @unpack c, profile, z_R, k, w₀, E₀ = p
-    z₀ = profile.z₀
-    wz = LaserTypes.w(z₀, p)
-
-    @test unit(c) == u"m/s"
-    @test unit(k) == u"μm^-1"
-    @test unit(z_R) == u"μm"
-
-    x₀ = SVector{3}(0u"μm",0u"μm",z₀)
+@testset "Values at origin" begin
+    units = [:SI_unitful, :atomic_unitful, :SI, :atomic]
+    x₀ = SVector{3}(0u"μm",0u"μm",0u"μm")
     t₀ = 0u"s"
+    x = [x₀, auconvert.(x₀), ustrip.(x₀), ustrip.(auconvert.(x₀))]
+    t = [t₀, auconvert(t₀), ustrip.(t₀), ustrip.(auconvert.(t₀))]
 
-    @testset "Dimensions" begin
-        @test all(dimension.(E(x₀,t₀,p)) .== Ref(dimension(u"V/m")))
-        @test all(dimension.(B(x₀,t₀,p)) .== Ref(dimension(u"T")))
-    end
-
-    @testset "Values at origin" begin
-        Ex, Ey, Ez = E(0u"μm", 0u"μm", 0u"μm", p)
-        @test Ex ≈ E₀
+    @testset "$unit" for (unit, xᵢ, tᵢ) in zip(units, x, t)
+        s = setup_laser(GaussLaser, unit, profile=ConstantProfile())
+        Ex, Ey, Ez = E(xᵢ, tᵢ, s)
+        @test Ex ≈ s.E₀
         @test iszero(Ey)
         @test iszero(Ez)
 
-        Bx, By, Bz = B(0u"μm", 0u"μm", 0u"μm", p)
+        Bx, By, Bz = B(xᵢ, tᵢ, s)
         @test iszero(Bx)
-        @test By ≈ E₀ / c
+        @test By ≈ s.E₀ / s.c
         @test iszero(Bz)
     end
 end
