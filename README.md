@@ -37,8 +37,9 @@ We can visualize the intensity of the created electric field with [Makie.jl](htt
 using Makie
 using LinearAlgebra
 
-f(x,y) = norm(E(Point3f0(x*10^6,y*10^6,s.z_F), 1, s))
-surface(-5:0.1:5, -5:0.1:5, f)
+f(x,y) = norm(E(Point3f0(x,y,0), 1, s))
+sc = surface(-5e6:1e4:5e6, -5e6:1e4:5e6, f)
+scale!(sc, 1, 1, 1/4)
 ```
 ![gauss](assets/gauss.png)
 
