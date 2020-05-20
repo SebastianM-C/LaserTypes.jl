@@ -1,3 +1,22 @@
+"""
+    setup_laser(laser, units; τ=nothing, kwargs...)
+
+Initialize the specified `laser` using the default parameteres in the specified
+`units`. Supported units are
+- `:SI`: Values are in SI, the numeric types are regular numbers (`Float64`)
+- `:SI_unitful`: Values are in SI, but using [Unitful.jl](https://github.com/PainterQubits/Unitful.jl)
+- `:atomic`: Values are in atomic units, the numeric types are regular numbers (`Float64`)
+- `:atomic_unitful`: Values are in atomic units, but using [UnitfulAtomic.jl](https://github.com/sostock/UnitfulAtomic.jl)
+
+The keyword arguments can be used to give specific values to the parameters instead
+of using the defaults.
+You can specify parameteres such as the wavelength and beam waist via `λ` and `w₀`.
+The duration of the pulse (assuming Gaussian temporal profile) can be given via `τ`.
+Be sure to use the same units as the ones provided via `units`.
+You can also specify dimensionless parameteres such as the normalized vector potential (`a₀`),
+the initial phase (`ϕ₀`) and the polarization (`ξx` and `ξy`).
+See the docomuntation for each laser type for more details on the supported arguments.
+"""
 function setup_laser(laser, units; τ=nothing, kwargs...)
     _c, _q, _m_q = fundamental_constants(Val(units))
     _λ, _w₀ = common_parameters(Val(units))

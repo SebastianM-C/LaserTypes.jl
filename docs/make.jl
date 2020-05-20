@@ -15,6 +15,7 @@ makedocs(
     ),
     pages = [
         "index.md",
+        "setup.md",
         "Laser profiles" => [
             "Spatial profiles" => [
                 "Gaussian profile" => "gauss.md",
@@ -22,6 +23,7 @@ makedocs(
             ],
             "temporal-profiles.md"
         ],
+        "advanced.md"
         # "Source code" => joinpath.("generated",
         #         [
         #         "LaserTypes.md",
