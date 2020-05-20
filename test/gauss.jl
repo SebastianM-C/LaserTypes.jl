@@ -8,16 +8,15 @@ using UnitfulAtomic
     x₀ = SVector{3}(0u"μm",0u"μm",0u"μm")
     t₀ = 0u"s"
     x = (x₀, auconvert.(x₀), ustrip.(x₀), ustrip.(auconvert.(x₀)))
-    t = (t₀, auconvert(t₀), ustrip(t₀), ustrip(auconvert(t₀)))
 
-    @testset "$unit" for (unit, xᵢ, tᵢ) in zip(units, x, t)
+    @testset "$unit" for (unit, xᵢ) in zip(units, x)
         s = setup_laser(GaussLaser, unit, profile=ConstantProfile())
-        Ex, Ey, Ez = E(xᵢ, tᵢ, s)
+        Ex, Ey, Ez = E(xᵢ, s)
         @test Ex ≈ s.E₀
         @test iszero(Ey)
         @test iszero(Ez)
 
-        Bx, By, Bz = B(xᵢ, tᵢ, s)
+        Bx, By, Bz = B(xᵢ, s)
         @test iszero(Bx)
         @test By ≈ s.E₀ / s.c
         @test iszero(Bz)
