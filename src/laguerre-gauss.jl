@@ -72,7 +72,7 @@ function Ex(laser::LaguerreGaussLaser, coords)
     wz = w(z, laser)
     Rz = R(z, z_R)
     gauss_laser = convert(GaussLaser, laser)
-    Eg = Ex(gauss_laser, z, r)
+    Eg = Ex(gauss_laser, coords)
     σ = (r/wz)^2
     mₐ = abs(m)
 
