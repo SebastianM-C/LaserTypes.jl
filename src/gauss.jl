@@ -46,7 +46,7 @@ GaussLaser
 end
 
 function required_coords(laser::GaussLaser, r)
-    PolarFromCartesian()(Vec2(r[1], r[2]))
+    CylindricalFromCartesian()(r)
 end
 
 function Ex(laser::GaussLaser, coords)

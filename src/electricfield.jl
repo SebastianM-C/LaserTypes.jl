@@ -16,6 +16,4 @@ function E(x, y, coords, laser)
     real(Vec3(E_x, E_y, E_z))
 end
 
-E(x, y, z, t, laser) = E(Vec3(x, y, z), t, laser)
-
 Ey(laser, Ex) = laser.ξy / laser.ξx * Ex

@@ -19,7 +19,5 @@ function B(x, y, coords, laser)
     real(Vec3(B_x, B_y, B_z))
 end
 
-B(x, y, z, t, laser) = B(Vec3(x, y, z), t, laser)
-
 Bx(laser, Ey) = -1/laser.c * Ey
 By(laser, Ex) = 1/laser.c * Ex
