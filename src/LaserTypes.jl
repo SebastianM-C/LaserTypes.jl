@@ -5,14 +5,13 @@ module LaserTypes
 export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussProfile,
     QuasiRectangularProfile, setup_laser
 
-using Parameters
-
 using Unitful
 using UnitfulAtomic
 using Parameters
-using GeometryTypes: Vec3
-import PhysicalConstants.CODATA2018: c_0, m_e, e
 using HypergeometricFunctions
+using GeometryTypes: Vec2, Vec3
+using CoordinateTransformations
+import PhysicalConstants.CODATA2018: c_0, m_e, e
 
 const _₁F₁ = HypergeometricFunctions.drummond1F1
 const pochhammer = HypergeometricFunctions.pochhammer

@@ -61,21 +61,28 @@ function Base.convert(::Type{GaussLaser}, laser::LaguerreGaussLaser)
     GaussLaser(c, q, m_q, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
 end
 
-function Ex(laser::LaguerreGaussLaser, x, y, z, r)
+function required_coords(laser::LaguerreGaussLaser, r)
+    CylindricalFromCartesian()(r)
+end
+
+function Ex(laser::LaguerreGaussLaser, coords)
     @unpack Nₚₘ, w₀, ϕ₀, z_R, ξx, p, m = laser
+    @unpack r, θ, z = coords
+
     wz = w(z, laser)
     Rz = R(z, z_R)
     gauss_laser = convert(GaussLaser, laser)
     Eg = Ex(gauss_laser, z, r)
     σ = (r/wz)^2
     mₐ = abs(m)
-    φ = atan(x, y)
 
-    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*φ-ϕ₀))
+    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))
 end
 
-function Ez(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
+function Ez(laser::LaguerreGaussLaser, coords, Ex, Ey, x, y)
     @unpack k, z_R, p, m = laser
+    @unpack r, z = coords
+
     wz = w(z, laser)
     mₐ = abs(m)
     ∓ = m > 0 ? (-) : +
@@ -87,8 +94,10 @@ function Ez(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
         )
 end
 
-function Bz(laser::LaguerreGaussLaser, Ex, Ey, x, y, z, r)
+function Bz(laser::LaguerreGaussLaser, coords, Ex, Ey, x, y)
     @unpack k, z_R, p, m, c = laser
+    @unpack r, z = coords
+
     wz = w(z, laser)
     mₐ = abs(m)
     ∓ = m > 0 ? (-) : +

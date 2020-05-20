@@ -4,6 +4,7 @@ authors = ["Sebastian Micluța-Câmpeanu <m.c.sebastian95@gmail.com>"]
 version = "0.1.0"
 
 [deps]
+CoordinateTransformations = "150eb455-5306-5404-9cee-2592286d6298"
 GeometryTypes = "4d00f742-c7ba-57c2-abde-4428a4b178cb"
 HypergeometricFunctions = "34004b35-14d8-5ef3-9330-4cdb6864b03a"
 Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
@@ -12,6 +13,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
 
 [compat]
+CoordinateTransformations = "0.6"
 GeometryTypes = "0.7, 0.8"
 HypergeometricFunctions = "0.2"
 Parameters = "0.12"

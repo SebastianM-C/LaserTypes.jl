@@ -1,29 +1,23 @@
 # # Magnetic Field
 
-Bx(laser, c1, c2, rest_of_coords...) = -1/laser.c * Ey(laser, c1, c2, rest_of_coords...)
-Bx(laser, Ey) = -1/laser.c * Ey
-
-By(laser, c1, c2, rest_of_coords...) = 1/laser.c * Ex(laser, c1, c2, rest_of_coords...)
-By(laser, Ex) = 1/laser.c * Ex
-
-function Bz(laser, x, y, z, r)
-    E_x = Ex(laser, x, y, z, r)
-    Bz(laser, E_x, Ey(laser, E_x), x, y, z, r)
+function B(r, laser)
+    coords = required_coords(laser, r)
+    x, y = r[1], r[2]
+    B(x, y, coords, laser)
 end
 
-function B(x, y, z, laser)
-    r = hypot(x, y)
+B(r, t, laser) = B(r, laser) * g(r[3], t, laser)
 
-    E_x = Ex(laser, x, y, z, r)
+function B(x, y, coords, laser)
+    E_x = Ex(laser, coords)
     E_y = Ey(laser, E_x)
 
     B_x = Bx(laser, E_y)
     B_y = By(laser, E_x)
-    B_z = Bz(laser, E_x, E_y, x, y, z, r)
+    B_z = Bz(laser, coords, E_x, E_y, x, y)
 
     real(Vec3(B_x, B_y, B_z))
 end
 
-B(x, y, z, t, laser) = B(x, y, z, laser) * g(z, t, laser)
-
-B(r, t, laser) = B(r[1], r[2], r[3], t, laser)
+Bx(laser, Ey) = -1/laser.c * Ey
+By(laser, Ex) = 1/laser.c * Ex
