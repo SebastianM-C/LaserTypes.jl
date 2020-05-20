@@ -6,4 +6,5 @@ using Test, SafeTestsets
     @safetestset "Dimensions" begin include("dimensions.jl") end
     @safetestset "Gauss" begin include("gauss.jl") end
     @safetestset "Laguerre-Gauss" begin include("laguerre-gauss.jl") end
+    @safetestset "Fμν" begin include("faraday.jl") end
 end

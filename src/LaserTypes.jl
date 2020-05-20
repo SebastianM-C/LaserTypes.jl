@@ -3,13 +3,14 @@
 module LaserTypes
 
 export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussProfile,
-    QuasiRectangularProfile, setup_laser
+    QuasiRectangularProfile, setup_laser, Fμν
 
 using Unitful
 using UnitfulAtomic
 using Parameters
 using HypergeometricFunctions
-using GeometryTypes: Vec2, Vec3
+using GeometryTypes: Vec3
+using StaticArrays: @SMatrix
 using CoordinateTransformations
 import PhysicalConstants.CODATA2018: c_0, m_e, e
 
@@ -27,7 +28,7 @@ R(z, z_R) = z + z_R^2 / z
 include("envelopes.jl")
 include("electricfield.jl")
 include("magneticfield.jl")
-include("potential.jl")
+include("faraday.jl")
 include("gauss.jl")
 include("laguerre-gauss.jl")
 include("setup.jl")

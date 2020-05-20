@@ -23,6 +23,7 @@ makedocs(
             ],
             "temporal-profiles.md"
         ],
+        "covariant.md",
         "advanced.md"
         # "Source code" => joinpath.("generated",
         #         [
