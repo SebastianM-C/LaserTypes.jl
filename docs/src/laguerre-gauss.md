@@ -22,7 +22,7 @@ where
 - ``k`` is the wavenumber
 - ``R`` is the radius of curvature
 - ``\arctg{\frac{z}{z_R}}`` is the Gouy phase
-- ``\phi_0`` is the initial phase
+- ``ϕ_0`` is the initial phase
 
 The magnetic field field is given by
 ```math
@@ -33,10 +33,7 @@ The magnetic field field is given by
     B_z (r,z) &= -\frac{\ii}{ck} \left\{\left[-2\frac{1+\ii\frac{z}{z_0}}{w^2(z)} + \frac{4p}{(|m|+1)w(z)^2}\ ₁F₁^{-1}\left(-p, |m|+1; 2\left(\frac{r}{w(z)}\right)^2\right)\right](y E_x + x E_y) - \frac{|m|}{x+\ii y} (E_y \mp \ii E_x)\right\}
 \end{aligned}
 ```
-```@autodocs
-Modules = [LaserTypes]
-Pages = ["src/laguerre-gauss.jl"]
-```
+
 !!! note "Choice of normalization"
 
     The normalization was chosen such that the normalization factor ``N_{pm}``

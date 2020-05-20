@@ -11,16 +11,28 @@
 [![docs][docs-img]][docs-url]
 
 This package aims to provide a common interface for different laser types. For the spatial profiles
-supported are Gauss and Laguerre-Gauss (with more to be added in the future)
+supported are Gauss and Laguerre-Gauss (with more to be added in the future).
+
+### Instalation
+
+To install this package use
+```
+]add https://github.com/SebastianM-C/LaserTypes.jl
+```
+
+### Usage
 
 The `setup_laser` function can be used to initialize the parameters for the laser
-depending on the laser type and units. For example for the Gaussian laser pusle in SI units use:
+depending on the laser type and units.
+The keyword arguments can be used to give specific values to the parameters instead of using the defaults.
+You can specify parameteres such as the wavelength and beam waist via `λ` and `w₀`.
+For example for a 800nm Gaussian laser pusle in SI units use:
 ```julia
 using LaserTypes
 using Unitful
 using StaticArrays
 
-s = setup_laser(GaussLaser, :SI)
+s = setup_laser(GaussLaser, :SI, λ=8e-7)
 ```
 This will create a structure containing all the parameters required to describe the laser.
 The `E` and `B` functions give the value of the electromagnetic fields at a space-time point specified by `r,t`.

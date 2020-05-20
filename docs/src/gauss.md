@@ -13,12 +13,12 @@ The `GaussLaser` type contains the parameters required for describing a
 where
 - ``E_0`` is the amplitude of the electric field
 - ``ξ_x`` and ``ξ_y`` give the polarization (choosing ``ξ_x=1`` and ``ξ_y=0`` for example, would give a linearly polarized field along the ``x`` axis while taking them ``1/\sqrt{2}`` and ``±\mathrm{i}/\sqrt{2}``would give right and left-handed circular polarization)
-- ``w = w(z)`` is the beam radius at ``z``
+- ``w(z)`` is the beam radius at ``z``
 - ``w_0`` is the [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist)
 - ``k`` is the wavenumber
 - ``R`` is the radius of curvature
 - ``\arctg{\frac{z}{z_R}}`` is the Gouy phase
-- ``\phi_0`` is the initial phase
+- ``ϕ_0`` is the initial phase
 
 The magnetic field field is given by
 ```math
@@ -29,11 +29,7 @@ The magnetic field field is given by
     B_z (r,z) &= \frac{2 \left(\ii -\frac{z}{z_R}\right)}{ckw^2 (z)} [yE_x (r,z) - xE_y(r,z)]
 \end{aligned}
 ```
-```@autodocs
-Modules = [LaserTypes]
-Pages = ["src/gauss.jl"]
-Order = [:type]
-```
+
 !!! note "Choice of normalization"
 
     The electric field is normalized such that in origin (with the default linear polarization) we obtain
