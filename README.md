@@ -29,8 +29,6 @@ You can specify parameteres such as the wavelength and beam waist via `λ` and `
 For example for a 800nm Gaussian laser pusle in SI units use:
 ```julia
 using LaserTypes
-using Unitful
-using StaticArrays
 
 s = setup_laser(GaussLaser, :SI, λ=8e-7)
 ```
@@ -38,6 +36,8 @@ This will create a structure containing all the parameters required to describe 
 The `E` and `B` functions give the value of the electromagnetic fields at a space-time point specified by `r,t`.
 For example, to evaluate the electric field at the origin use
 ```julia
+using StaticArrays
+
 x₀ = SVector{3}(0,0,0)
 t₀ = 0
 
