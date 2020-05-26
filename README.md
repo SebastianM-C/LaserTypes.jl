@@ -17,7 +17,7 @@ supported are Gauss and Laguerre-Gauss (with more to be added in the future).
 
 To install this package use
 ```
-]add https://github.com/SebastianM-C/LaserTypes.jl
+]add LaserTypes
 ```
 
 ### Usage

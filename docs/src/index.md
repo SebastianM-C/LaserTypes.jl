@@ -7,5 +7,5 @@ as the [Gaussian laser](https://en.wikipedia.org/wiki/Gaussian_beam) or the [Lag
 
 To install this package use the Pkg mode in the Julia REPL
 ```
-]add https://github.com/SebastianM-C/LaserTypes.jl
+]add LaserTypes
 ```
