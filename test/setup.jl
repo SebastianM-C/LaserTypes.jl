@@ -10,8 +10,9 @@ import PhysicalConstants.CODATA2018: c_0, m_e, e, α
     λ = 0.8u"μm"
     w0 = 58.0u"μm"
     τ = 18.0u"fs"
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
-    s = setup_laser(GaussLaser, :SI_unitful)
+    a₀ = 2.0
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, a₀=2.0, profile=GaussProfile(c=c,τ=τ))
+    s = setup_laser(GaussLaser, :SI_unitful, a₀=2.0)
     @test p == s
 
     @test unit(s.c) == u"m/s"
@@ -26,9 +27,10 @@ end
     λ = auconvert(800u"nm")
     w0 = auconvert(58u"μm")
     τ = auconvert(18u"fs")
+    a₀=2.0
 
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
-    s = setup_laser(GaussLaser, :atomic_unitful)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, a₀=2.0, profile=GaussProfile(c=c,τ=τ))
+    s = setup_laser(GaussLaser, a₀=2.0, :atomic_unitful)
     @test p == s
 
     @test unit(s.c) == u"a0_au*Eh_au/ħ_au"
@@ -44,8 +46,8 @@ end
     λ = ustrip(u"m", 0.8u"μm")
     w0 = ustrip(u"m", 58.0u"μm")
     τ = ustrip(u"s", 18.0u"fs")
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
-    s = setup_laser(GaussLaser, :SI)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, a₀=2.0, profile=GaussProfile(c=c,τ=τ))
+    s = setup_laser(GaussLaser, :SI, a₀=2.0)
     @test p == s
 
     @test s.ω ≈ 2.354564459e15
@@ -58,9 +60,10 @@ end
     λ = ustrip(auconvert(800u"nm"))
     w0 = ustrip(auconvert(58u"μm"))
     τ = ustrip(auconvert(18u"fs"))
+    a₀=2.0
 
-    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, profile=GaussProfile(c=c,τ=τ))
-    s = setup_laser(GaussLaser, :atomic)
+    p = GaussLaser(c=c, q=q, m_q=m, λ=λ, w₀=w0, a₀=2.0, profile=GaussProfile(c=c,τ=τ))
+    s = setup_laser(GaussLaser, :atomic, a₀=2.0)
     @test p == s
 
     @test s.ω ≈ 0.05695419

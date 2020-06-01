@@ -39,7 +39,7 @@ function setup_laser(laser, units; τ=nothing, kwargs...)
         end
     end
 
-    laser(c=c, q=q, m_q=m_q, λ=λ, w₀=w₀, profile=profile, others...)
+    laser(;c=c, q=q, m_q=m_q, λ=λ, w₀=w₀, profile=profile, others...)
 end
 
 fundamental_constants(::Val{:SI_unitful}) = c_0, -e, m_e
