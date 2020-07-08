@@ -17,7 +17,7 @@ UnitfulAtomic = "a7773ee8-282e-5fa2-be4e-bd808c38a91a"
 [compat]
 CoordinateTransformations = "0.6"
 GeometryTypes = "0.7, 0.8"
-HypergeometricFunctions = "0.2"
+HypergeometricFunctions = "0.2, 0.3"
 Parameters = "0.12"
 PhysicalConstants = "0.2"
 StaticArrays = "0.12"
