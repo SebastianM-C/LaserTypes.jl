@@ -100,7 +100,7 @@ function envelope(profile::GaussProfile, z, t)
     @unpack c, τ, t₀, z₀ = profile
     φ = (t - t₀) - (z - z₀) / c
 
-    cosh(uconvert(NoUnits, φ / τ)^2)
+    exp(-(φ / τ)^2)
 end
 
 function envelope(profile::QuasiRectangularProfile, z, t)
