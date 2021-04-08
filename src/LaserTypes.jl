@@ -3,7 +3,7 @@
 module LaserTypes
 
 export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussProfile,
-    QuasiRectangularProfile, setup_laser, Fμν
+    Cos²Profile, QuasiRectangularProfile, setup_laser, Fμν
 
 using Unitful
 using UnitfulAtomic
