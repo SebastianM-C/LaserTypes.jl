@@ -3,7 +3,7 @@ using Unitful
 using StaticArrays
 using UnitfulAtomic
 
-@testset "$laser" for laser in [GaussLaser, LaguerreGaussLaser]
+@testset "$laser" for laser in [GaussLaser, LaguerreGaussLaser, Cos²Profile]
     units = [:SI_unitful, :atomic_unitful]
     x₀ = SVector{3}(0u"μm",0u"μm",0u"μm")
     t₀ = 0u"s"
