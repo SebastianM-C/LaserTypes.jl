@@ -18,7 +18,7 @@ struct ConstantProfile end
 This envelope provides a finite duration for the laser pulse and thus can provide a more
 realistic description of an actual laser pulse.
 ```math
-envelope(z, t) = \\cosh\\left[\\left(\\frac{φ}{τ}\\right)^2\\right],
+envelope(z, t) = \\exp\\left[\\left(\\frac{φ}{τ}\\right)^2\\right],
 ```
 where
 ```math
@@ -79,9 +79,9 @@ which could offer better results than the Gaussian profile in the paraxial limit
 ```math
 envelope(z, t) =
     \\begin{cases}
-    \\cosh\\left[\\left(\\frac{φ}{τ}\\right)^2\\right], & \\text{for } φ ≤ 0\\\\
+    \\exp\\left[\\left(\\frac{φ}{τ}\\right)^2\\right], & \\text{for } φ ≤ 0\\\\
     1\\,, & \\text{for } φ < Δz\\\\
-    \\cosh\\left[\\left(\\frac{φ - Δz/c}{τ}\\right)^2\\right], & \\text{otherwise}
+    \\exp\\left[\\left(\\frac{φ - Δz/c}{τ}\\right)^2\\right], & \\text{otherwise}
     \\end{cases}
 ```
 where
@@ -110,7 +110,7 @@ end
 
 The time dependence of the fields defined by this package is given by
 ```math
-g(z, t) = \\cos(ω t) envelope(z, t),
+g(z, t) = \\exp(ω t) envelope(z, t),
 ```
 where
 - `z` and `t` are the position on the ``Oz`` axis and the time
@@ -122,7 +122,7 @@ and
 function g(z, t, par)
     @unpack profile, ω = par
 
-    cos(ω*t) * envelope(profile, z, t)
+    exp(im*ω*t) * envelope(profile, z, t)
 end
 
 envelope(::ConstantProfile, z, t) = 1
@@ -150,10 +150,10 @@ function envelope(profile::QuasiRectangularProfile, z, t)
     φ = (t - t₀) - (z - z₀) / c
 
     if φ < zero(φ)
-        cosh(uconvert(NoUnits, φ / τ)^2)
+        exp((φ / τ)^2)
     elseif φ < Δz
         one(φ)
     else
-        cosh(uconvert(NoUnits, (φ - Δz/c) / τ)^2)
+        exp(((φ - Δz/c) / τ)^2)
     end
 end
