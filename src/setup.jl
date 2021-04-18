@@ -18,11 +18,12 @@ the initial phase (`ϕ₀`) and the polarization (`ξx` and `ξy`).
 See the docomuntation for each laser type for more details on the supported arguments.
 """
 function setup_laser(laser, units; τ=nothing, kwargs...)
-    _c, _q, _m_q = fundamental_constants(Val(units))
+    _c, _q, _m_q, _μ₀ = fundamental_constants(Val(units))
     _λ, _w₀ = common_parameters(Val(units))
     c = get(kwargs, :c, _c)
     q = get(kwargs, :q, _q)
     m_q = get(kwargs, :m_q, _m_q)
+    μ₀ = get(kwargs, :m_q, _μ₀)
     λ = get(kwargs, :λ, _λ)
     w₀ = get(kwargs, :w₀, _w₀)
 
@@ -32,17 +33,17 @@ function setup_laser(laser, units; τ=nothing, kwargs...)
     profile = get(kwargs, :profile, GaussProfile(c=c, τ=τ))
 
     others = Dict{Symbol,Any}()
-    excluded = [:c, :q, :m_q, :λ, :w₀, :profile]
+    excluded = [:c, :q, :m_q, :μ₀, :λ, :w₀, :profile]
     for (k,v) in kwargs
         if k ∉ excluded
             push!(others, k=>v)
         end
     end
 
-    laser(;c=c, q=q, m_q=m_q, λ=λ, w₀=w₀, profile=profile, others...)
+    laser(;c=c, q=q, m_q=m_q, μ₀=μ₀, λ=λ, w₀=w₀, profile=profile, others...)
 end
 
-fundamental_constants(::Val{:SI_unitful}) = c_0, -e, m_e
+fundamental_constants(::Val{:SI_unitful}) = c_0, -e, m_e, μ_0
 fundamental_constants(::Val{:SI}) = ustrip.(fundamental_constants(Val(:SI_unitful)))
 fundamental_constants(::Val{:atomic_unitful}) = auconvert.(fundamental_constants(Val(:SI_unitful)))
 fundamental_constants(::Val{:atomic}) = ustrip.(fundamental_constants(Val(:atomic_unitful)))

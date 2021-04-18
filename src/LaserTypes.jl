@@ -12,7 +12,7 @@ using HypergeometricFunctions
 using GeometryTypes: Vec3
 using StaticArrays: @SMatrix
 using CoordinateTransformations
-import PhysicalConstants.CODATA2018: c_0, m_e, e
+import PhysicalConstants.CODATA2018: c_0, m_e, e, μ_0
 
 const _₁F₁ = HypergeometricFunctions.drummond1F1
 const pochhammer = HypergeometricFunctions.pochhammer

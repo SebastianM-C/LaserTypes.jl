@@ -27,11 +27,12 @@ also computed
 """
 LaguerreGaussLaser
 
-@with_kw struct LaguerreGaussLaser{V,Q,M,L1,L2,L3,F,C,T,P,I,W,K,E,R}
+@with_kw struct LaguerreGaussLaser{V,Q,M,M0,L1,L2,L3,F,C,T,P,I,W,K,E,R}
     # independent values
     c::V = c_0
     q::Q = -e
     m_q::M = m_e
+    μ₀::M0 = μ_0
     λ::L1 = 0.8u"μm"
     a₀::F = 1.0
     ϕ₀::F = 0.0
@@ -57,8 +58,8 @@ end
 Convert a `LaguerreGaussLaser` to a `GaussLaser` with the same parameters.
 """
 function Base.convert(::Type{GaussLaser}, laser::LaguerreGaussLaser)
-    @unpack c, q, m_q, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀ = laser
-    GaussLaser(c, q, m_q, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
+    @unpack c, q, m_q, μ₀, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀ = laser
+    GaussLaser(c, q, m_q, μ₀, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
 end
 
 function required_coords(laser::LaguerreGaussLaser, r)
