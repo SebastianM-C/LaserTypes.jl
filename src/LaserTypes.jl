@@ -2,12 +2,15 @@
 
 module LaserTypes
 
-export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussProfile,
-    Cos²Profile, QuasiRectangularProfile, setup_laser, Fμν
+export E, B,
+    GaussLaser, LaguerreGaussLaser,
+    ConstantProfile, GaussProfile, Cos²Profile, QuasiRectangularProfile,
+    setup_laser, Fμν, S
 
 using Unitful
 using UnitfulAtomic
 using Parameters
+using LinearAlgebra
 using HypergeometricFunctions
 using GeometryTypes: Vec3
 using StaticArrays: @SMatrix
@@ -32,5 +35,6 @@ include("faraday.jl")
 include("gauss.jl")
 include("laguerre-gauss.jl")
 include("setup.jl")
+include("derived.jl")
 
 end # module
