@@ -70,7 +70,6 @@ function Ex(laser::LaguerreGaussLaser, coords)
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
-    Rz = R(z, z_R)
     gauss_laser = convert(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
     σ = (r/wz)^2
@@ -79,32 +78,42 @@ function Ex(laser::LaguerreGaussLaser, coords)
     ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))
 end
 
-function Ez(laser::LaguerreGaussLaser, coords, Ex, Ey, x, y)
-    @unpack k, z_R, p, m = laser
-    @unpack r, z = coords
+function Ez(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
+    @unpack Nₚₘ, w₀, ϕ₀, k, z_R, p, m, ξx, ξy = laser
+    @unpack r, θ, z = coords
 
     wz = w(z, laser)
     mₐ = abs(m)
+    σ = (r/wz)^2
     ∓ = m > 0 ? (-) : +
+    gauss_laser = convert(GaussLaser, laser)
+    Eg = Ex(gauss_laser, coords)
+    𝟘 = zero(typeof(E_x))/oneunit(typeof(x))
+    ExImEy = Eg*Nₚₘ*r^(mₐ-1)*(√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-(m+1)*θ-ϕ₀))
 
     -im / k * (
-        (-2*(1+im*(z/z_R))/wz^2
-        + 4p/(((mₐ+1)*wz^2) * _₁F₁(-p+1, mₐ+2, 2r^2/wz^2))) * (x*Ex + y*Ey)
-        - (!iszero(m) ? mₐ/(x+im*y) * (Ex ∓ im*Ey) : zero(typeof(Ex))/oneunit(typeof(x)))
+        -2*(1+im*(z/z_R))/wz^2 * (x*E_x + y*E_y)
+        + 4p/((mₐ+1)*wz^2) * (x*ξx+y*ξy) * Eg*Nₚₘ*(r*√2/wz)^mₐ*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))  
+        - (!iszero(m) ? mₐ * (ξx ∓ im*ξy) * ExImEy : 𝟘)
         )
 end
 
-function Bz(laser::LaguerreGaussLaser, coords, Ex, Ey, x, y)
-    @unpack k, z_R, p, m, c = laser
-    @unpack r, z = coords
+function Bz(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
+    @unpack Nₚₘ, w₀, ϕ₀, k, c, z_R, p, m, ξx, ξy = laser
+    @unpack r, θ, z = coords
 
     wz = w(z, laser)
+    σ = (r/wz)^2
     mₐ = abs(m)
     ∓ = m > 0 ? (-) : +
+    gauss_laser = convert(GaussLaser, laser)
+    Eg = Ex(gauss_laser, coords)
+    𝟘 = zero(typeof(E_x))/oneunit(typeof(x))
+    ExImEy = Eg*Nₚₘ*r^(mₐ-1)*(√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-(m+1)*θ-ϕ₀))
 
-    -im / (c*k) * (
-        (-2*(1+im*(z/z_R))/wz^2
-        + 4p/(((mₐ+1)*wz^2) * _₁F₁(-p+1, mₐ+2, 2r^2/wz^2))) * (y*Ex + x*Ey)
-        - (!iszero(m) ? mₐ/(x+im*y) * (Ey ∓ im*Ex) : zero(typeof(Ex))/oneunit(typeof(x)))
+    -im / (k*c) * (
+        -2*(1+im*(z/z_R))/wz^2 * (x*E_x + y*E_y)
+        + 4p/((mₐ+1)*wz^2) * (x*ξy+y*ξx) * Eg*Nₚₘ*(r*√2/wz)^mₐ*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))  
+        - (!iszero(m) ? mₐ * (ξx ∓ im*ξy) * ExImEy : 𝟘)
         )
 end
