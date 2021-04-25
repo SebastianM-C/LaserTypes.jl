@@ -12,8 +12,7 @@ using UnitfulAtomic
 using Parameters
 using LinearAlgebra
 using HypergeometricFunctions
-using GeometryTypes: Vec3
-using StaticArrays: @SMatrix
+using StaticArrays
 using CoordinateTransformations
 import PhysicalConstants.CODATA2018: c_0, m_e, e, μ_0
 

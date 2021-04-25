@@ -13,7 +13,7 @@ function E(x, y, coords, laser)
     E_y = Ey(laser, E_x)
     E_z = Ez(laser, coords, E_x, E_y, x, y)
 
-    Vec3(E_x, E_y, E_z)
+    SVector{3}(E_x, E_y, E_z)
 end
 
 Ey(laser, Ex) = laser.ξy / laser.ξx * Ex

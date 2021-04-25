@@ -16,7 +16,7 @@ function B(x, y, coords, laser)
     B_y = By(laser, E_x)
     B_z = Bz(laser, coords, E_x, E_y, x, y)
 
-    Vec3(B_x, B_y, B_z)
+    SVector{3}(B_x, B_y, B_z)
 end
 
 Bx(laser, Ey) = -1/laser.c * Ey

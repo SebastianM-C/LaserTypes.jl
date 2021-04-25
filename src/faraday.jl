@@ -12,7 +12,7 @@ function EB(r, laser)
     B_y = By(laser, E_x)
     B_z = Bz(laser, coords, E_x, E_y, x, y)
 
-    MagneticField = Vec3(B_x, B_y, B_z)
+    MagneticField = SVector{3}(B_x, B_y, B_z)
 
     return ElectricField, MagneticField
 end
