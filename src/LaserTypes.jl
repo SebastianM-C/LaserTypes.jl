@@ -2,17 +2,20 @@
 
 module LaserTypes
 
-export E, B, GaussLaser, LaguerreGaussLaser, ConstantProfile, GaussProfile,
-    Cos²Profile, QuasiRectangularProfile, setup_laser, Fμν
+export E, B,
+    GaussLaser, LaguerreGaussLaser,
+    ConstantProfile, GaussProfile, Cos²Profile, QuasiRectangularProfile,
+    setup_laser, Fμν, S
 
 using Unitful
 using UnitfulAtomic
 using Parameters
+using LinearAlgebra
 using HypergeometricFunctions
 using GeometryTypes: Vec3
 using StaticArrays: @SMatrix
 using CoordinateTransformations
-import PhysicalConstants.CODATA2018: c_0, m_e, e
+import PhysicalConstants.CODATA2018: c_0, m_e, e, μ_0
 
 const _₁F₁ = HypergeometricFunctions.drummond1F1
 const pochhammer = HypergeometricFunctions.pochhammer
@@ -32,5 +35,6 @@ include("faraday.jl")
 include("gauss.jl")
 include("laguerre-gauss.jl")
 include("setup.jl")
+include("derived.jl")
 
 end # module

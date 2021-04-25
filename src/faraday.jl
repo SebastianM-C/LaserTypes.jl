@@ -12,12 +12,12 @@ function EB(r, laser)
     B_y = By(laser, E_x)
     B_z = Bz(laser, coords, E_x, E_y, x, y)
 
-    MagneticField = real(Vec3(B_x, B_y, B_z))
+    MagneticField = Vec3(B_x, B_y, B_z)
 
     return ElectricField, MagneticField
 end
 
-EB(r, t, laser) = EB(r, laser) .* g(r[end], t, laser)
+EB(r, t, laser) = real.(EB(r, laser) .* g(r[end], t, laser))
 
 """
     Fμν(x, laser)

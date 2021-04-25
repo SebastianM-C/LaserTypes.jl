@@ -24,11 +24,12 @@ also computed
 """
 GaussLaser
 
-@with_kw struct GaussLaser{V,Q,M,L1,L2,L3,F,C,T,P,W,K,E}
+@with_kw struct GaussLaser{V,Q,M,M0,L1,L2,L3,F,C,T,P,W,K,E}
     # independent values
     c::V = c_0
     q::Q = -e
     m_q::M = m_e
+    μ₀::M0 = μ_0
     λ::L1 = 0.8u"μm"
     a₀::F = 1.0
     ϕ₀::F = 0.0
