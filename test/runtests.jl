@@ -7,4 +7,5 @@ using Test, SafeTestsets
     @safetestset "Gauss" begin include("gauss.jl") end
     @safetestset "Laguerre-Gauss" begin include("laguerre-gauss.jl") end
     @safetestset "Fμν" begin include("faraday.jl") end
+    @safetestset "Derived" begin include("derived.jl") end
 end
