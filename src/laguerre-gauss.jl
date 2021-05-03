@@ -59,7 +59,7 @@ Convert a `LaguerreGaussLaser` to a `GaussLaser` with the same parameters.
 """
 function Base.convert(::Type{GaussLaser}, laser::LaguerreGaussLaser)
     @unpack c, q, m_q, μ₀, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀ = laser
-    GaussLaser(c, q, m_q, μ₀, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
+    GaussLaser(c, q, m_q, μ₀, λ, a₀, 0., w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
 end
 
 function required_coords(laser::LaguerreGaussLaser, r)
