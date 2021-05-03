@@ -110,7 +110,7 @@ end
 
 The time dependence of the fields defined by this package is given by
 ```math
-g(z, t) = \\exp(ω t) envelope(z, t),
+g(z, t) = \\exp(i ω t) envelope(z, t),
 ```
 where
 - `z` and `t` are the position on the ``Oz`` axis and the time
