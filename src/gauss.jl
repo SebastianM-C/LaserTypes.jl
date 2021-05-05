@@ -57,7 +57,7 @@ function Ex(laser::GaussLaser, coords)
     wz = w(z, laser)
     Rz = R(z, z_R)
 
-    ξx * E₀ * w₀/wz * exp(-im*k*z - (r/wz)^2 - im*((k*r^2)/(2Rz) - atan(z, z_R) - ϕ₀))
+    ξx * E₀ * w₀/wz * exp(-im*k*z - (r/wz)^2 - im*(-(k*r^2)/(2Rz) - atan(z, z_R) - ϕ₀))
 end
 
 function Ez(laser::GaussLaser, coords, Ex, Ey, x, y)
@@ -65,8 +65,9 @@ function Ez(laser::GaussLaser, coords, Ex, Ey, x, y)
     z = coords.z
 
     wz = w(z, laser)
+    Rz = R(z, z_R)
 
-    2(im - z/z_R) / (k*wz^2) * (x*Ex + y*Ey)
+    (1/Rz + 2im/(k*wz^2)) * (x*Ex + y*Ey)
 end
 
 function Bz(laser::GaussLaser, coords, Ex, Ey, x, y)
@@ -74,6 +75,7 @@ function Bz(laser::GaussLaser, coords, Ex, Ey, x, y)
     z = coords.z
 
     wz = w(z, laser)
+    Rz = R(z, z_R)
 
-    2(im - z/z_R) / (c*k*wz^2) * (y*Ex - x*Ey)
+    (1/Rz + 2im/(k*wz^2))/c * (x*Ey - y*Ex)
 end
