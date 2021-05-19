@@ -4,7 +4,7 @@ using StaticArrays
 using UnitfulAtomic
 using LinearAlgebra
 
-pochhammer(a::Int,b::Int) = factorial(a+b-1)/factorial(a-1)
+pochhammer = LaserTypes.pochhammer
 
 @testset "Values at origin" begin
     units = [:SI_unitful, :atomic_unitful, :SI, :atomic]
