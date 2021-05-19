@@ -67,7 +67,7 @@ function required_coords(laser::LaguerreGaussLaser, r)
 end
 
 function Ex(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, w₀, ϕ₀, z_R, ξx, p, m = laser
+    @unpack Nₚₘ, ϕ₀, z_R, ξx, p, m = laser
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
@@ -76,15 +76,14 @@ function Ex(laser::LaguerreGaussLaser, coords)
     σ = (r/wz)^2
     mₐ = abs(m)
 
-    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))
+    ξx * Eg * Nₚₘ * (r*√2/wz)^mₐ * _₁F₁(-p, mₐ+1, 2σ) * exp(im*((2p+mₐ)*atan(z, z_R) - m*θ + ϕ₀))
 end
 
 function Ez(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
-    @unpack Nₚₘ, w₀, ϕ₀, k, z_R, p, m, ξx, ξy = laser
+    @unpack Nₚₘ, ϕ₀, k, z_R, p, m, ξx, ξy = laser
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
-    Rz = R(z, z_R)
     mₐ = abs(m)
     σ = (r/wz)^2
     sgn = sign(m)
@@ -92,21 +91,20 @@ function Ez(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
 
     gauss_laser = convert(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
-    NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))
+    NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ+ϕ₀))
 
-    - im / k * (
-        (im*k/Rz - 2/wz^2)*(x*E_x + y*E_y) 
-        + (iszero(m) ? 𝟘 : NEgexp*_₁F₁(-p, mₐ+1, 2σ)*(√2/wz)^mₐ*r^(mₐ-1)*exp(im*sgn*θ)*mₐ*(ξx-im*sgn*ξy))
-        - (iszero(p) ? 𝟘 : NEgexp*_₁F₁(-p+1, mₐ+2, 2σ)*(r*√2/wz)^mₐ*(4p)/((mₐ+1)*wz^2)*(x*ξx + y*ξy))
-    )
+   -im/k * (
+       (iszero(m) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ)) 
+     - 2/(wz^2) * (1 + im*z/z_R) * (x*E_x + y*E_y)
+     - (iszero(p) ? 𝟘 : 4p/((mₐ+1) * wz^2) * (x*ξx + y*ξy) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
+   )
 end
 
 function Bz(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
-    @unpack Nₚₘ, w₀, ϕ₀, k, ω, z_R, p, m, ξx, ξy = laser
+    @unpack Nₚₘ, ϕ₀, ω, z_R, p, m, ξx, ξy = laser
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
-    Rz = R(z, z_R)
     σ = (r/wz)^2
     mₐ = abs(m)
     sgn = sign(m)
@@ -114,12 +112,11 @@ function Bz(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
 
     gauss_laser = convert(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
-    NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))
-    
-    -im / ω * (
-        (im*k/Rz - 2/wz^2)*(x*E_y - y*E_x) 
-        + (iszero(m) ? 𝟘 : NEgexp*_₁F₁(-p, mₐ+1, 2σ)*(√2/wz)^mₐ*r^(mₐ-1)*exp(im*sgn*θ)*mₐ*(ξy+im*sgn*ξx))
-        - (iszero(p) ? 𝟘 : NEgexp*_₁F₁(-p+1, mₐ+2, 2σ)*(r*√2/wz)^mₐ*(4p)/((mₐ+1)*wz^2)*(x*ξy - y*ξx))
-    ) 
+    NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ+ϕ₀))
 
+    -im/ω * (
+       - (iszero(m) ? 𝟘 : mₐ * (ξy + im*sgn*ξx) * (√2/wz)^mₐ*r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
+       + 2/(wz^2) * (1 + im*z/z_R) * (x*E_y - y*E_x) 
+       + (iszero(p) ? 𝟘 : (4p)/((mₐ+1) * wz^2) * (x*ξy - y*ξx) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
+    ) 
 end
