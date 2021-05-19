@@ -25,7 +25,7 @@ function w(z, par)
     w₀ * √(1 + (z/z_R)^2)
 end
 
-R(z, z_R) = z + z_R^2 / z
+# R(z, z_R) = z + z_R^2 / z
 
 include("envelopes.jl")
 include("electricfield.jl")

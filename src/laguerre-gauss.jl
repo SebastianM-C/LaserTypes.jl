@@ -59,7 +59,7 @@ Convert a `LaguerreGaussLaser` to a `GaussLaser` with the same parameters.
 """
 function Base.convert(::Type{GaussLaser}, laser::LaguerreGaussLaser)
     @unpack c, q, m_q, μ₀, λ, a₀, ϕ₀, w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀ = laser
-    GaussLaser(c, q, m_q, μ₀, λ, a₀, 0., w₀, ξx, ξy, profile, ω, k, z_R, T₀, E₀)
+    GaussLaser(c, q, m_q, μ₀, λ, a₀, 0., w₀, 1 + 0im, 0 + 0im, profile, ω, k, z_R, T₀, E₀)
 end
 
 function required_coords(laser::LaguerreGaussLaser, r)
@@ -67,7 +67,7 @@ function required_coords(laser::LaguerreGaussLaser, r)
 end
 
 function Ex(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, w₀, ϕ₀, z_R, ξx, p, m = laser
+    @unpack Nₚₘ, ϕ₀, z_R, ξx, p, m = laser
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
@@ -76,45 +76,47 @@ function Ex(laser::LaguerreGaussLaser, coords)
     σ = (r/wz)^2
     mₐ = abs(m)
 
-    ξx*Eg*Nₚₘ*(r*√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))
+    ξx * Eg * Nₚₘ * (r*√2/wz)^mₐ * _₁F₁(-p, mₐ+1, 2σ) * exp(im*((2p+mₐ)*atan(z, z_R) - m*θ + ϕ₀))
 end
 
 function Ez(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
-    @unpack Nₚₘ, w₀, ϕ₀, k, z_R, p, m, ξx, ξy = laser
+    @unpack Nₚₘ, ϕ₀, k, z_R, p, m, ξx, ξy = laser
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
     mₐ = abs(m)
     σ = (r/wz)^2
-    ∓ = m > 0 ? (-) : +
+    sgn = sign(m)
+    𝟘 = zero(typeof(E_x))/oneunit(typeof(x))
+
     gauss_laser = convert(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
-    𝟘 = zero(typeof(E_x))/oneunit(typeof(x))
-    ExImEy = Eg*Nₚₘ*r^(mₐ-1)*(√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-(m+1)*θ-ϕ₀))
+    NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ+ϕ₀))
 
-    -im / k * (
-        -2*(1+im*(z/z_R))/wz^2 * (x*E_x + y*E_y)
-        + 4p/((mₐ+1)*wz^2) * (x*ξx+y*ξy) * Eg*Nₚₘ*(r*√2/wz)^mₐ*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))  
-        - (!iszero(m) ? mₐ * (ξx ∓ im*ξy) * ExImEy : 𝟘)
-        )
+   -im/k * (
+       (iszero(m) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ)) 
+     - 2/(wz^2) * (1 + im*z/z_R) * (x*E_x + y*E_y)
+     - (iszero(p) ? 𝟘 : 4p/((mₐ+1) * wz^2) * (x*ξx + y*ξy) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
+   )
 end
 
 function Bz(laser::LaguerreGaussLaser, coords, E_x, E_y, x, y)
-    @unpack Nₚₘ, w₀, ϕ₀, k, c, z_R, p, m, ξx, ξy = laser
+    @unpack Nₚₘ, ϕ₀, ω, z_R, p, m, ξx, ξy = laser
     @unpack r, θ, z = coords
 
     wz = w(z, laser)
     σ = (r/wz)^2
     mₐ = abs(m)
-    ∓ = m > 0 ? (-) : +
+    sgn = sign(m)
+    𝟘 = zero(typeof(E_x))/oneunit(typeof(x))
+
     gauss_laser = convert(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
-    𝟘 = zero(typeof(E_x))/oneunit(typeof(x))
-    ExImEy = Eg*Nₚₘ*r^(mₐ-1)*(√2/wz)^mₐ*_₁F₁(-p, mₐ+1, 2σ)*exp(im*((2p+mₐ)*atan(z, z_R)-(m+1)*θ-ϕ₀))
+    NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ+ϕ₀))
 
-    -im / (k*c) * (
-        -2*(1+im*(z/z_R))/wz^2 * (x*E_x + y*E_y)
-        + 4p/((mₐ+1)*wz^2) * (x*ξy+y*ξx) * Eg*Nₚₘ*(r*√2/wz)^mₐ*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ-ϕ₀))  
-        - (!iszero(m) ? mₐ * (ξx ∓ im*ξy) * ExImEy : 𝟘)
-        )
+    -im/ω * (
+       - (iszero(m) ? 𝟘 : mₐ * (ξy + im*sgn*ξx) * (√2/wz)^mₐ*r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
+       + 2/(wz^2) * (1 + im*z/z_R) * (x*E_y - y*E_x) 
+       + (iszero(p) ? 𝟘 : (4p)/((mₐ+1) * wz^2) * (x*ξy - y*ξx) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
+    ) 
 end
