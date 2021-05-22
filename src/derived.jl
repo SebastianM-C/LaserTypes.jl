@@ -8,6 +8,7 @@ Compute the [Poynting vector](https://en.wikipedia.org/wiki/Poynting_vector) def
 """
 function S(r, t, laser)
     ElectricField, MagneticField = EB(r, t, laser)
+    μ₀ = fundamental_constants(laser, :μ₀)
 
-    1 / laser.μ₀ * (ElectricField × MagneticField)
+    1 / μ₀ * (ElectricField × MagneticField)
 end
