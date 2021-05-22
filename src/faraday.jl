@@ -1,23 +1,41 @@
 # # 4-Potential
 
+function EB(r, t, laser)
+    R = geometry(laser).rotation_matrix
+    r′ = rotate_coords(R, r)
+    inv_c = immutable_cache(laser, :inv_c)
+    if unit(eltype(r)) ≠ NoUnits
+        λ = laser.λ
+        r′ = uconvert.(unit(λ), r′)
+    end
+
+    E_B = real.(EB(r′, laser) .* g(r′[end], t, laser; inv_c))
+
+    return inv_rotate.((R,), E_B)
+end
+
 function EB(r, laser)
-    x, y = r[1], r[2]
+    @assert length(r) == 3 "The laser is only defined in 3D"
+    fill!(mutable_cache(laser), r)
     coords = required_coords(laser, r)
 
-    ElectricField = E(x, y, coords, laser)
-    E_x = ElectricField[1]
-    E_y = ElectricField[2]
+    E_x = Ex(laser, coords)
+    update_cache!(laser, :Ex, E_x)
+    E_y = Ey(laser, coords)
+    update_cache!(laser, :Ey, E_y)
+    E_z = Ez(laser, coords)
+    update_cache!(laser, :Ez, E_z)
 
-    B_x = Bx(laser, E_y)
-    B_y = By(laser, E_x)
-    B_z = Bz(laser, coords, E_x, E_y, x, y)
+    ElectricField = SVector{3}(E_x, E_y, E_z)
+
+    B_x = Bx(laser, coords)
+    B_y = By(laser, coords)
+    B_z = Bz(laser, coords)
 
     MagneticField = SVector{3}(B_x, B_y, B_z)
 
     return ElectricField, MagneticField
 end
-
-EB(r, t, laser) = real.(EB(r, laser) .* g(r[end], t, laser))
 
 """
     Fμν(x, laser)
@@ -36,14 +54,14 @@ E_z / c &     -B_y   &    B_z   &     0
 ```
 """
 function Fμν(x, laser)
-    c = laser.c
+    c⁻¹ = immutable_cache(laser, :inv_c)
     r = x[begin+1:end]
-    t = x[begin] / c
+    t = x[begin] * c⁻¹
     (Ex, Ey, Ez), (Bx, By, Bz) = EB(r, t, laser)
 
     𝟘 = zero(Bx)
-    return @SMatrix [𝟘     -Ex/c -Ey/c -Ez/c ;
-                     Ex/c    𝟘    -Bz    By  ;
-                     Ey/c    Bz    𝟘    -Bx  ;
-                     Ez/c   -By    Bx    𝟘   ]
+    return @SMatrix [𝟘      -Ex*c⁻¹  -Ey*c⁻¹ -Ez*c⁻¹ ;
+                     Ex*c⁻¹   𝟘      -Bz      By     ;
+                     Ey*c⁻¹   Bz      𝟘      -Bx     ;
+                     Ez*c⁻¹  -By      Bx      𝟘      ]
 end
