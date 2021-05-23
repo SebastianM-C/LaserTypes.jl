@@ -15,11 +15,11 @@ using UnitfulAtomic
         @test all(dimension.(E(xᵢ,tᵢ,s)) .== Ref(dimension(u"V/m")))
         @test all(dimension.(B(xᵢ,tᵢ,s)) .== Ref(dimension(u"T")))
 
-        @testset "Profiles" for profile in (ConstantProfile,
+        @testset "$profile" for profile in (ConstantProfile,
                                             GaussProfile,
                                             Cos²Profile,
                                             QuasiRectangularProfile)
-            s = setup_laser(laser, unit, profile=profile())
+            s = setup_laser(laser, unit; profile)
             @test all(dimension.(E(xᵢ,tᵢ,s)) .== Ref(dimension(u"V/m")))
             @test all(dimension.(B(xᵢ,tᵢ,s)) .== Ref(dimension(u"T")))
         end

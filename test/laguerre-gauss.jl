@@ -10,7 +10,7 @@ using LinearAlgebra
     t₀ = 0u"s"
     x = (x₀, auconvert.(x₀), ustrip.(x₀), ustrip.(auconvert.(x₀)))
     t = (t₀, auconvert.(t₀), ustrip.(t₀), ustrip.(auconvert.(t₀)))
-    
+
     @testset "$unit" for (unit, xᵢ, tᵢ) in zip(units, x, t)
         s = setup_laser(LaguerreGaussLaser, unit, m = 1, p = 1, profile=ConstantProfile())
         Ex, Ey, Ez = E(xᵢ, tᵢ, s)
@@ -34,7 +34,7 @@ end
     a₀ = 2.
     s = setup_laser(LaguerreGaussLaser, :atomic, m = 1, p = 1, λ = λ, a₀ = a₀, w₀ = w₀,
         profile=ConstantProfile())
-   
+
     fieldE(x,y,z,t) = E([x,y,z],t,s)
     fieldB(x,y,z,t) = B([x,y,z],t,s)
 
