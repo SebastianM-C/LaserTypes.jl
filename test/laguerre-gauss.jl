@@ -4,6 +4,8 @@ using StaticArrays
 using UnitfulAtomic
 using LinearAlgebra
 
+pochhammer = LaserTypes.pochhammer
+
 @testset "Values at origin" begin
     units = [:SI_unitful, :atomic_unitful, :SI, :atomic]
     x₀ = SVector{3}(0u"μm",0u"μm",0u"μm")
@@ -21,7 +23,7 @@ using LinearAlgebra
         Bx, By, Bz = B(xᵢ, tᵢ,s)
         @test iszero(Bx)
         @test iszero(By)
-        @test iszero(Bz)
+        @test isapprox(Bz, - factorial(s.p)/pochhammer(abs(s.m)+1,s.p)*s.E₀*s.Nₚₘ*(√2*s.w₀)/(s.c*s.z_R))
     end
 end
 
@@ -45,4 +47,22 @@ end
     wXY = map(r -> wenergy₀(r[1],r[2]), Iterators.product(domainXY,domainXY))
     wMax = maximum(wXY)
     @test wMax < 1e6
+end
+
+@testset "LG(p = 0, m = 0, x, y, z, t) == G(x, y, z, t)" begin
+    ω = 0.057
+    T₀ = 2π/ω
+    c = 137.036
+    λ = c*T₀
+    w₀ = 75 * λ
+    a₀ = 2.
+    LG = setup_laser(LaguerreGaussLaser, :atomic, m = 0, p = 0, λ = λ, a₀ = a₀, w₀ = w₀,
+        profile=ConstantProfile())
+    G = setup_laser(GaussLaser, :atomic, λ = λ, a₀ = a₀, w₀ = w₀,
+        profile=ConstantProfile())
+    for i in 1:100
+        x, y, z = w₀ * (0.5 .- rand(3))
+        t = T₀ * rand()
+        @test Fμν([t*c, x, y, z], G) ≈ Fμν([t*c, x, y, z], LG) rtol = 1e-8
+    end
 end
