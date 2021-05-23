@@ -17,36 +17,79 @@ You can also specify dimensionless parameteres such as the normalized vector pot
 the initial phase (`ϕ₀`) and the polarization (`ξx` and `ξy`).
 See the docomuntation for each laser type for more details on the supported arguments.
 """
-function setup_laser(laser, units; τ=nothing, kwargs...)
-    _c, _q, _m_q, _μ₀ = fundamental_constants(Val(units))
+function setup_laser(laser, units; kwargs...)
     _λ, _w₀ = common_parameters(Val(units))
-    c = get(kwargs, :c, _c)
-    q = get(kwargs, :q, _q)
-    m_q = get(kwargs, :m_q, _m_q)
-    μ₀ = get(kwargs, :m_q, _μ₀)
-    λ = get(kwargs, :λ, _λ)
-    w₀ = get(kwargs, :w₀, _w₀)
+    constants = FundamentalConstants(units)
+    c = constants.c
 
-    if τ ≡ nothing
-        τ = duration(Val(units))
+    if haskey(kwargs, :λ)
+        λ = kwargs[:λ]
+    elseif haskey(kwargs, :ω)
+        ω = kwargs[:ω]
+        λ = 2π*c / ω
+    elseif haskey(kwargs, :k)
+        k = kwargs[:k]
+        λ = 2π/k
+    else
+        λ = _λ
     end
-    profile = get(kwargs, :profile, GaussProfile(c=c, τ=τ))
+
+    if haskey(kwargs, :w₀)
+        w₀ = kwargs[:w₀]
+    elseif haskey(kwargs, :z_R)
+        z_R = kwargs[:z_R]
+        k = 2π / λ
+        w₀ = √(2z_R / k)
+    else
+        w₀ = _w₀
+    end
+
+    if haskey(kwargs, :a₀)
+        a₀ = kwargs[:a₀]
+    elseif haskey(kwargs, :E₀)
+        E₀ = kwargs[:E₀]
+        q = abs(constants.q)
+        mₑ = constants.mₑ
+        ω = 2π * c / λ
+        a₀ = E₀ * q / (mₑ * c * ω)
+    else
+        a₀ = 1
+    end
+
+    τ = get(kwargs, :τ, duration(Val(units)))
+    t₀ = get(kwargs, :t₀, zero(τ))
+    z₀ = get(kwargs, :z₀, zero(λ))
+
+    @debug "profile"
+    if haskey(kwargs, :profile)
+        prof = kwargs[:profile]
+        if prof isa Type
+            if prof isa Type{<:GaussProfile} || prof isa Type{<:Cos²Profile}
+                profile = prof(;τ, t₀, z₀)
+            elseif prof isa Type{<:QuasiRectangularProfile}
+                Δt = get(kwargs, :Δt, 10τ)
+                profile = prof(;τ, t₀, z₀, Δt)
+            else
+                profile = prof()
+            end
+        else
+            profile = prof
+        end
+    else
+        @debug "default profile"
+        profile = GaussProfile(;τ, z₀)
+    end
 
     others = Dict{Symbol,Any}()
-    excluded = [:c, :q, :m_q, :μ₀, :λ, :w₀, :profile]
+    processed = [:λ, :ω, :k, :w₀, :z_R, :a₀, :E₀, :τ, :t₀, :z₀, :profile]
     for (k,v) in kwargs
-        if k ∉ excluded
+        if k ∉ processed
             push!(others, k=>v)
         end
     end
 
-    laser(;c=c, q=q, m_q=m_q, μ₀=μ₀, λ=λ, w₀=w₀, profile=profile, others...)
+    laser(units; λ, w₀, a₀, profile, others...)
 end
-
-fundamental_constants(::Val{:SI_unitful}) = c_0, -e, m_e, μ_0
-fundamental_constants(::Val{:SI}) = ustrip.(fundamental_constants(Val(:SI_unitful)))
-fundamental_constants(::Val{:atomic_unitful}) = auconvert.(fundamental_constants(Val(:SI_unitful)))
-fundamental_constants(::Val{:atomic}) = ustrip.(fundamental_constants(Val(:atomic_unitful)))
 
 common_parameters(::Val{:SI_unitful}) = 0.8u"μm", 58.0u"μm"
 common_parameters(::Val{:SI}) = ustrip.(u"m", common_parameters(Val(:SI_unitful)))
