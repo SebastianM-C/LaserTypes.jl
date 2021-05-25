@@ -28,6 +28,13 @@ using LinearAlgebra
         @test iszero(By)
         @test isapprox(Bz, - factorial(s.p)/pochhammer(abs(s.m)+1,s.p)*E₀*Nₚₘ*(√2*s.w₀)/(c*z_R))
     end
+
+    @testset "Default laser" begin
+        s = setup_laser(LaguerreGaussLaser, :atomic; λ = 1e5, a₀ = 1, w₀ = 1e6,
+            profile = GaussProfile(τ = 100, z₀ = 0.))
+
+        @test E([0, 0, 0], 0, s)[1] == s.derived.E₀
+    end
 end
 
 @testset "Divergence in Polynomial Roots" begin
