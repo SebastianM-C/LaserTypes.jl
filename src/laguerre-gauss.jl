@@ -214,17 +214,17 @@ function Ez(laser::LaguerreGaussLaser, coords)
     update_cache!(laser, :NEgexp, NEgexp)
 
     -im/k * (
-       (iszero(m) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ)) 
+       (iszero(m) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
      - 2/(wz^2) * (1 + im*z/z_R) * (x*E_x + y*E_y)
      - (iszero(p) ? 𝟘 : 4p/((mₐ+1) * wz^2) * (x*ξx + y*ξy) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
-     )
+    )
 end
 
 function Bz(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, k, z_R, inv_c = immutable_cache(laser)
-    @unpack wz, mₐ, Eg, Ex, Ey, NEgexp, x, y = mutable_cache(laser)
+    @unpack z_R = immutable_cache(laser)
+    @unpack wz, mₐ, Ex, NEgexp, x, y = mutable_cache(laser)
     @unpack ξx, ξy = polarization(laser)
-    @unpack ϕ₀, p, m = laser
+    @unpack p, m = laser
     @unpack r, θ, z = coords
 
     sgn = sign(m)
@@ -232,7 +232,7 @@ function Bz(laser::LaguerreGaussLaser, coords)
 
     -im/ω * (
        - (iszero(m) ? 𝟘 : mₐ * (ξy + im*sgn*ξx) * (√2/wz)^mₐ*r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
-       + 2/(wz^2) * (1 + im*z/z_R) * (x*E_y - y*E_x) 
+       + 2/(wz^2) * (1 + im*z/z_R) * (x*E_y - y*E_x)
        + (iszero(p) ? 𝟘 : (4p)/((mₐ+1) * wz^2) * (x*ξy - y*ξx) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
-    ) 
+    )
 end
