@@ -13,7 +13,7 @@ import PhysicalConstants.CODATA2018: c_0
     @testset "$unit" for (unit, xᵢ) in zip(units, x)
         s = setup_laser(laser, unit, profile=ConstantProfile())
         F = Fμν(xᵢ,s)
-        c = s.c
+        c = s.constants.c
 
         if unit ∈ [:SI_unitful, :atomic_unitful]
             @test all(dimension.(F) .== Ref(dimension(u"T")))

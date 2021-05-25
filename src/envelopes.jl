@@ -10,7 +10,7 @@ envelope(z, t) = 1
 which gives an infinite duration for the electromagnetic field configuration (we cannot
 call this a laser pusle since a pulse implicitely has a finite duration).
 """
-struct ConstantProfile end
+struct ConstantProfile <: AbstractTemporalProfile end
 
 @doc """
     GaussProfile{V,T,L}
@@ -32,11 +32,14 @@ and
 """
 GaussProfile
 
-@with_kw struct GaussProfile{V,T,L}
-    c::V = c_0
-    τ::T = 18.02u"fs"
-    t₀::T = zero(τ)
-    z₀::L = -4*τ*c
+struct GaussProfile{T,IT,L} <: AbstractTemporalProfile
+    inv_τ::IT
+    t₀::T
+    z₀::L
+end
+
+function GaussProfile(;τ, t₀=zero(τ), z₀)
+    GaussProfile(inv(τ), t₀, z₀)
 end
 
 @doc """
@@ -59,15 +62,19 @@ and
 - `c` is the speed of light
 - `τ` is the duration of the pulse and has the default value 18.02fs
 - `t₀` is the origin of the time axis and it is 0 by default
-- `z₀` is the initial position of the intensity peak and has the default value `-4*τ*c`
+- `z₀` is the initial position of the intensity peak and is 0 by default
 """
 Cos²Profile
 
-@with_kw struct Cos²Profile{V,T,L}
-    c::V = c_0
-    τ::T = 18.02u"fs"
-    t₀::T = zero(τ)
-    z₀::L = -4*τ*c
+struct Cos²Profile{T,IT,L} <: AbstractTemporalProfile
+    τ::T
+    inv_τ::IT
+    t₀::T
+    z₀::L
+end
+
+function Cos²Profile(;τ, t₀=zero(τ), z₀)
+    Cos²Profile(τ, inv(τ), t₀, z₀)
 end
 
 @doc """
@@ -81,7 +88,7 @@ envelope(z, t) =
     \\begin{cases}
     \\exp\\left[\\left(\\frac{φ}{τ}\\right)^2\\right], & \\text{for } φ ≤ 0\\\\
     1\\,, & \\text{for } φ < Δz\\\\
-    \\exp\\left[\\left(\\frac{φ - Δz/c}{τ}\\right)^2\\right], & \\text{otherwise}
+    \\exp\\left[\\left(\\frac{φ - Δt/c}{τ}\\right)^2\\right], & \\text{otherwise}
     \\end{cases}
 ```
 where
@@ -93,16 +100,20 @@ and
 - `τ` is the duration of the pulse (FWHM) and has the default value 18.02fs
 - `t₀` is the origin of the time axis and it is 0 by default
 - `z₀` is the initial position of the intensity peak and has the default value `-4*τ*c`
-- `Δz` is the width of the flat part of the profile and the default value `10*τ*c`
+- `Δt` is the duration of the flat part of the profile and the default value `10*τ`
 """
 QuasiRectangularProfile
 
-@with_kw struct QuasiRectangularProfile{V,T,L}
-    c::V = c_0
-    τ::T = 18.02u"fs"
-    t₀::T = zero(τ)
-    z₀::L = -4*τ*c
-    Δz::L = 10*τ*c
+struct QuasiRectangularProfile{T,IT,L} <: AbstractTemporalProfile
+    inv_τ::IT
+    t₀::T
+    z₀::L
+    Δt::T
+end
+
+function QuasiRectangularProfile(;τ, t₀=zero(τ), z₀, Δt=10τ)
+    t₀, Δt = promote(t₀, Δt)
+    QuasiRectangularProfile(inv(τ), t₀, z₀, Δt)
 end
 
 """
@@ -119,41 +130,42 @@ and
 - ``ω`` is the angular frequency of the laser pulse
 - ``envelope(z, t)`` is a function that can be used to control the duration of the pulse
 """
-function g(z, t, par)
-    @unpack profile, ω = par
+function g(z, t, laser; inv_c)
+    profile = laser.profile
+    ω = immutable_cache(laser, :ω)
 
-    exp(im*ω*t) * envelope(profile, z, t)
+    exp(im*ω*t) * envelope(profile, z, t; inv_c)
 end
 
-envelope(::ConstantProfile, z, t) = 1
+@inline envelope(::ConstantProfile, z, t; inv_c) = 1
 
-function envelope(profile::GaussProfile, z, t)
-    @unpack c, τ, t₀, z₀ = profile
-    φ = (t - t₀) - (z - z₀) / c
+@inline function envelope(profile::GaussProfile, z, t; inv_c)
+    @unpack inv_τ, t₀, z₀ = profile
+    φ = (t - t₀) - (z - z₀) * inv_c
 
-    exp(-(φ / τ)^2)
+    exp(-(φ * inv_τ)^2)
 end
 
-function envelope(profile::Cos²Profile, z, t)
-    @unpack c, τ, t₀, z₀ = profile
-    φ = π*((t - t₀) - (z - z₀) / c)
+@inline function envelope(profile::Cos²Profile, z, t; inv_c)
+    @unpack inv_τ, τ, t₀, z₀ = profile
+    φ = π*((t - t₀) - (z - z₀) * inv_c)
 
     if abs(φ) / π < τ / 2
-        cos(-(φ / τ))^2
+        cos(-(φ * inv_τ))^2
     else
-        zero(t / τ)
+        zero(t * inv_τ)
     end
 end
 
-function envelope(profile::QuasiRectangularProfile, z, t)
-    @unpack c, τ, t₀, z₀, Δz = profile
-    φ = (t - t₀) - (z - z₀) / c
+@inline function envelope(profile::QuasiRectangularProfile, z, t; inv_c)
+    @unpack inv_τ, t₀, z₀, Δt = profile
+    φ = (t - t₀) - (z - z₀) * inv_c
 
     if φ < zero(φ)
-        exp((φ / τ)^2)
-    elseif φ < Δz
+        exp((φ * inv_τ)^2)
+    elseif φ < Δt
         one(φ)
     else
-        exp(((φ - Δz/c) / τ)^2)
+        exp(((φ - Δz*inv_c) * inv_τ)^2)
     end
 end

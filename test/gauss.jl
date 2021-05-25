@@ -1,4 +1,5 @@
 using LaserTypes, Test
+using LaserTypes: immutable_cache
 using Unitful
 using StaticArrays
 using UnitfulAtomic
@@ -12,13 +13,13 @@ using UnitfulAtomic
     @testset "$unit" for (unit, xᵢ) in zip(units, x)
         s = setup_laser(GaussLaser, unit, profile=ConstantProfile())
         Ex, Ey, Ez = E(xᵢ, s)
-        @test Ex ≈ s.E₀
+        @test Ex ≈ immutable_cache(s, :E₀)
         @test iszero(Ey)
         @test iszero(Ez)
 
         Bx, By, Bz = B(xᵢ, s)
         @test iszero(Bx)
-        @test By ≈ s.E₀ / s.c
+        @test By ≈ immutable_cache(s, :E₀) * immutable_cache(s, :inv_c)
         @test iszero(Bz)
     end
 end
