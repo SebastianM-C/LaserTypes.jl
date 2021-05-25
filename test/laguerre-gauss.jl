@@ -1,10 +1,11 @@
 using LaserTypes, Test
+using LaserTypes: pochhammer, immutable_cache
+using UnPack
 using Unitful
 using StaticArrays
 using UnitfulAtomic
 using LinearAlgebra
 
-pochhammer = LaserTypes.pochhammer
 
 @testset "Values at origin" begin
     units = [:SI_unitful, :atomic_unitful, :SI, :atomic]
@@ -20,10 +21,12 @@ pochhammer = LaserTypes.pochhammer
         @test iszero(Ey)
         @test iszero(Ez)
 
+        @unpack E₀, Nₚₘ, z_R = immutable_cache(s)
+        c = s.constants.c
         Bx, By, Bz = B(xᵢ, tᵢ,s)
         @test iszero(Bx)
         @test iszero(By)
-        @test isapprox(Bz, - factorial(s.p)/pochhammer(abs(s.m)+1,s.p)*s.E₀*s.Nₚₘ*(√2*s.w₀)/(s.c*s.z_R))
+        @test isapprox(Bz, - factorial(s.p)/pochhammer(abs(s.m)+1,s.p)*E₀*Nₚₘ*(√2*s.w₀)/(c*z_R))
     end
 end
 
