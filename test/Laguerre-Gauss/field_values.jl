@@ -14,7 +14,7 @@ normalization(m, p, E₀, Nₚₘ) = factorial(p)/pochhammer(abs(m)+1,p)*E₀*N�
 csv_folder = joinpath(@__DIR__, "fields_csv/")
 
 for (roots, dirs, files) in walkdir(csv_folder)
-    for file in files
+    @testset "$file" for file in files
         i, p, m = tryparse.(Int, (split(file,"_"))[2:4])
         ξx = cos(i*π/4) + 0im; ξy = im*sin(i*π/4);
         s = setup_laser(LaguerreGaussLaser, :atomic; λ, w₀, p, m, ξx, ξy, profile = ConstantProfile())
