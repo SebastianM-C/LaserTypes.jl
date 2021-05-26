@@ -1,8 +1,7 @@
 using LaserTypes
+using LaserTypes: pochhammer, immutable_cache
 using CSV
 using Test
-
-pochhammer = LaserTypes.pochhammer
 
 ω = 0.057
 c = 137.03599908330935
