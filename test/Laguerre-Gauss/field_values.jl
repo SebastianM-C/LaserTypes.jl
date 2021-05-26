@@ -1,6 +1,7 @@
 using LaserTypes
 using LaserTypes: pochhammer, immutable_cache
 using CSV
+using UnPack
 using Test
 
 ω = 0.057
@@ -16,9 +17,7 @@ for (roots, dirs, files) in walkdir(pwd())
         i, p, m = tryparse.(Int, (split(file,"_"))[2:4])
         ξx = cos(i*π/4) + 0im; ξy = im*sin(i*π/4); 
         s = setup_laser(LaguerreGaussLaser, :atomic; λ, w₀, p, m, ξx, ξy, profile = ConstantProfile())
-        E₀ = s.derived.E₀
-        Nₚₘ = s.derived.Nₚₘ
-        for row in CSV.File(file, header = false)
+        @unpack E₀, Nₚₘ = immutable_cache(s)
             x = row[1]
             y = row[2]
             z = row[3]
