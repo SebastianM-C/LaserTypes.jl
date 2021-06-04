@@ -15,6 +15,7 @@ using HypergeometricFunctions
 using StaticArrays
 using CoordinateTransformations
 using AutoHashEquals
+using ParallelProcessingTools
 import PhysicalConstants.CODATA2018: c_0, e, m_e, ε_0, μ_0
 
 const _₁F₁ = HypergeometricFunctions.drummond1F1
