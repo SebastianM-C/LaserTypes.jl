@@ -23,7 +23,7 @@ end
 
 function B(r, laser::AbstractLaser)
     @assert length(r) == 3 "The laser is only defined in 3D"
-    fill!(laser.cache, r)
+    fill!(mutable_cache(laser), r)
     coords = required_coords(laser, r)
 
     E_x = Ex(laser, coords)

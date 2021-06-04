@@ -29,14 +29,14 @@ end
 end
 
 function GaussLaserCache(λ, E)
-    GaussLaserCache(
+    ThreadLocal(GaussLaserCache(
         zero(λ),        # x
         zero(λ),        # y
         zero(λ),        # wz
         zero(E*im),     # Ex
         zero(E*im),     # Ey
         zero(E*im)      # Ez
-    )
+    ))
 end
 
 function Base.fill!(cache::GaussLaserCache, x::AbstractVector)
@@ -73,7 +73,7 @@ GaussLaser
 struct GaussLaser{C0,Q,M,Eps,Mu,IC,W,K,T,Z,E,L,CE,D,R,C,P,F} <: AbstractLaser
     constants::FundamentalConstants{C0,Q,M,Eps,Mu}
     derived::GaussLaserConstantCache{IC,W,K,T,Z,E}
-    cache::GaussLaserCache{L,CE}
+    cache::ThreadLocal{GaussLaserCache{L,CE}}
     geometry::LaserGeometry{D,R}
     polarization::LaserPolarization{C}
     profile::P

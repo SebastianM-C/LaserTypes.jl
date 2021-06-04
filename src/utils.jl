@@ -2,8 +2,8 @@
 @inline fundamental_constants(laser::AbstractLaser, k) = getfield(laser.constants, k)
 @inline immutable_cache(laser::AbstractLaser) = getfield(laser, :derived)
 @inline immutable_cache(laser::AbstractLaser, k) = getfield(laser.derived, k)
-@inline mutable_cache(laser::AbstractLaser) = getfield(laser, :cache)
-@inline update_cache!(laser::AbstractLaser, k, v) = setfield!(laser.cache, k, v)
+@inline mutable_cache(laser::AbstractLaser) = getfield(laser, :cache)[]
+@inline update_cache!(laser::AbstractLaser, k, v) = setfield!(laser.cache[], k, v)
 @inline geometry(laser::AbstractLaser) = getfield(laser, :geometry)
 @inline polarization(laser::AbstractLaser) = getfield(laser, :polarization)
 @inline polarization(laser::AbstractLaser, k) = getfield(laser.polarization, k)
