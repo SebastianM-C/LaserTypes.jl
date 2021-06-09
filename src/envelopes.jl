@@ -74,6 +74,7 @@ struct Cos²Profile{T,IT,L} <: AbstractTemporalProfile
 end
 
 function Cos²Profile(;τ, t₀=zero(τ), z₀)
+    t₀, τ = promote(t₀, τ)
     Cos²Profile(τ, inv(τ), t₀, z₀)
 end
 
@@ -86,9 +87,9 @@ which could offer better results than the Gaussian profile in the paraxial limit
 ```math
 envelope(z, t) =
     \\begin{cases}
-    \\exp\\left[\\left(\\frac{φ}{τ}\\right)^2\\right], & \\text{for } φ ≤ 0\\\\
-    1\\,, & \\text{for } φ < Δz\\\\
-    \\exp\\left[\\left(\\frac{φ - Δt/c}{τ}\\right)^2\\right], & \\text{otherwise}
+    \\exp\\left[-\\left(\\frac{φ + Δt/2}{τ}\\right)^2\\right], & \\text{for } φ ≤ \\frac{Δt}{2}\\\\
+    1\\,, & \\text{for } \\text{otherwise}\\\\
+    \\exp\\left[-\\left(\\frac{φ - Δt/2}{τ}\\right)^2\\right], & \\ φ > \\frac{Δt}{2}
     \\end{cases}
 ```
 where
@@ -112,7 +113,7 @@ struct QuasiRectangularProfile{T,IT,L} <: AbstractTemporalProfile
 end
 
 function QuasiRectangularProfile(;τ, t₀=zero(τ), z₀, Δt=10τ)
-    t₀, Δt = promote(t₀, Δt)
+    τ, t₀, Δt = promote(τ, t₀, Δt)
     QuasiRectangularProfile(inv(τ), t₀, z₀, Δt)
 end
 
@@ -159,13 +160,13 @@ end
 
 @inline function envelope(profile::QuasiRectangularProfile, z, t; inv_c)
     @unpack inv_τ, t₀, z₀, Δt = profile
-    φ = (t - t₀) - (z - z₀) * inv_c
+    φ = (t - t₀/2) - (z - z₀/2) * inv_c
 
-    if φ < zero(φ)
-        exp((φ * inv_τ)^2)
-    elseif φ < Δt
+    if φ < -Δt/2
+        exp(-((φ + Δt/2) * inv_τ)^2)
+    elseif φ < Δt/2
         one(φ)
     else
-        exp(((φ - Δz*inv_c) * inv_τ)^2)
+        exp(-((φ - Δt/2) * inv_τ)^2)
     end
 end

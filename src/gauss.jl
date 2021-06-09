@@ -70,8 +70,12 @@ also computed
 """
 GaussLaser
 
-struct GaussLaser{C0,Q,M,Eps,Mu,IC,W,K,T,Z,E,L,CE,D,R,C,P,F} <: AbstractLaser
-    constants::FundamentalConstants{C0,Q,M,Eps,Mu}
+struct GaussLaser{C0,Q,M,Eps,Mu,U,
+                  IC,W,K,T,Z,E,
+                  L,CE,
+                  D,R,
+                  C,P,F} <: AbstractLaser
+    constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
     derived::GaussLaserConstantCache{IC,W,K,T,Z,E}
     cache::ThreadLocal{GaussLaserCache{L,CE}}
     geometry::LaserGeometry{D,R}

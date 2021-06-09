@@ -36,5 +36,6 @@ include("laguerre-gauss.jl")
 include("setup.jl")
 include("derived.jl")
 include("utils.jl")
+include("show.jl")
 
 end # module

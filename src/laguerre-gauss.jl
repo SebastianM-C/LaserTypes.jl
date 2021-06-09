@@ -84,8 +84,13 @@ also computed
 """
 LaguerreGaussLaser
 
-struct LaguerreGaussLaser{C0,Q,M,Eps,Mu,IC,W,K,T,Z,E,F,L,CE,EE,S,I,D,R,C,P} <: AbstractLaser
-    constants::FundamentalConstants{C0,Q,M,Eps,Mu}
+struct LaguerreGaussLaser{C0,Q,M,Eps,Mu,U,
+                          IC,W,K,T,Z,E,F,
+                          L,S,CE,EE,I,
+                          D,R,
+                          C,
+                          P} <: AbstractLaser
+    constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
     derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F}
     cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE,I}}
     geometry::LaserGeometry{D,R}
