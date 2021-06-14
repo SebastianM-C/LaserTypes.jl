@@ -1,9 +1,10 @@
-struct FundamentalConstants{C,Q,M,E,Mu}
+struct FundamentalConstants{C,Q,M,E,Mu,U}
     c::C
     q::Q
     mₑ::M
     ε₀::E
     μ₀::Mu
+    unit_system::U
 end
 
 fundamental_constants(::Val{:SI_unitful}) = c_0, -e, m_e, ε_0, μ_0
@@ -13,5 +14,5 @@ fundamental_constants(::Val{:atomic}) = ustrip.(fundamental_constants(Val(:atomi
 
 function FundamentalConstants(units::Symbol)
     constants = fundamental_constants(Val(units))
-    FundamentalConstants(constants...)
+    FundamentalConstants(constants..., units)
 end

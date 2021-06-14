@@ -35,7 +35,7 @@ end
 end
 
 function LaguerreGaussLaserCache(λ, E, m)
-    LaguerreGaussLaserCache(
+    ThreadLocal(LaguerreGaussLaserCache(
         zero(λ),                    # x
         zero(λ),                    # y
         zero(λ/λ),                  # σ
@@ -46,7 +46,7 @@ function LaguerreGaussLaserCache(λ, E, m)
         zero(E*im),                 # Eg
         zero(E*im),                 # NEgexp
         zero(m),                    # m₀
-    )
+    ))
 end
 
 
@@ -84,10 +84,15 @@ also computed
 """
 LaguerreGaussLaser
 
-struct LaguerreGaussLaser{C0,Q,M,Eps,Mu,IC,W,K,T,Z,E,F,L,CE,EE,S,I,D,R,C,P} <: AbstractLaser
-    constants::FundamentalConstants{C0,Q,M,Eps,Mu}
+struct LaguerreGaussLaser{C0,Q,M,Eps,Mu,U,
+                          IC,W,K,T,Z,E,F,
+                          L,S,CE,EE,I,
+                          D,R,
+                          C,
+                          P} <: AbstractLaser
+    constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
     derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F}
-    cache::LaguerreGaussLaserCache{L,S,CE,EE,I}
+    cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE,I}}
     geometry::LaserGeometry{D,R}
     polarization::LaserPolarization{C}
     profile::P
@@ -193,10 +198,10 @@ function Ex(laser::LaguerreGaussLaser, coords)
 
     gauss_laser = convert_laser(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
-    wz = gauss_laser.cache.wz
+    wz = gauss_laser.cache[].wz
     σ = (r/wz)^2
     mₐ = abs(m)
-    @pack! cache = Eg, wz, σ, mₐ
+    @pack! cache[] = Eg, wz, σ, mₐ
 
     ξx * Eg * Nₚₘ * (r*√2/wz)^mₐ * _₁F₁(-p, mₐ+1, 2σ) * exp(im*((2p+mₐ)*atan(z, z_R) - m*θ + ϕ₀))
 end
