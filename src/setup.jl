@@ -17,7 +17,7 @@ You can also use equivalent descriptions, such as passing the angular frequency 
 or the wave number `k` instead of `λ` and the [Rayleigh range](https://en.wikipedia.org/wiki/Rayleigh_length)
 `z_R` instead of `z₀`.
 The duration of the pulse (assuming Gaussian temporal profile) can be given via `τ`
-(default `18.0u"fs"``).
+(default `18.0u"fs"`).
 
 You can also specify dimensionless parameteres such the initial phase (`ϕ₀`)
 and the polarization (`ξx` and `ξy`).
