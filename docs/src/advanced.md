@@ -8,6 +8,11 @@ Modules = [LaserTypes]
 Pages = ["src/gauss.jl", "src/laguerre-gauss.jl"]
 Order = [:type]
 ```
-!!! note
-    When specifying derived values, the corresponding independent parameters must also be given in order to avoid discrepancies. For example if you give `k`,
-    you must also give the corresponding `λ`.
+
+## Laser Geometry
+
+```@autodocs
+Modules = [LaserTypes]
+Pages = ["src/coords.jl"]
+Order = [:type]
+```
