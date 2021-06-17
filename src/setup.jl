@@ -10,12 +10,23 @@ Initialize the specified `laser` using the default parameteres in the specified
 
 The keyword arguments can be used to give specific values to the parameters instead
 of using the defaults.
-You can specify parameteres such as the wavelength and beam waist via `λ` and `w₀`.
-The duration of the pulse (assuming Gaussian temporal profile) can be given via `τ`.
-Be sure to use the same units as the ones provided via `units`.
-You can also specify dimensionless parameteres such as the normalized vector potential (`a₀`),
-the initial phase (`ϕ₀`) and the polarization (`ξx` and `ξy`).
-See the docomuntation for each laser type for more details on the supported arguments.
+You can specify parameteres such as the wavelength `λ` (default `0.8u"μm"`),
+beam waist `w₀` (default `58.0u"μm"`) and the normalized vector potential `a₀` (default `1`).
+
+You can also use equivalent descriptions, such as passing the angular frequency `ω`
+or the wave number `k` instead of `λ` and the [Rayleigh range](https://en.wikipedia.org/wiki/Rayleigh_length)
+`z_R` instead of `z₀`.
+The duration of the pulse (assuming Gaussian temporal profile) can be given via `τ`
+(default `18.0u"fs"``).
+
+You can also specify dimensionless parameteres such the initial phase (`ϕ₀`)
+and the polarization (`ξx` and `ξy`).
+The laser amplitude can be also specified through `E₀`.
+
+By default the laser propagates along the `Oz` direction and osillates along the `Ox` direction.
+If you want to change that, you can use the `propagation_dir` and `orientation` arguments.
+See [Laser Geometry](@ref) for more details.
+See also the docomuntation for each laser type for more details on the additional supported arguments.
 """
 function setup_laser(laser, units; kwargs...)
     _λ, _w₀ = common_parameters(Val(units))

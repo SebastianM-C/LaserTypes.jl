@@ -47,18 +47,21 @@ function Base.fill!(cache::GaussLaserCache, x::AbstractVector)
 end
 
 @doc """
-    struct GaussLaser{V,Q,M,L,F,C,T,P,W,K,E}
+    struct GaussLaser <: AbstractLaser
 
-The `GaussLaser` is defined by the following independent parameters
-- `c` is the speed of light in vaccum, with the default value being in SI (`c_0` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
-- `q` is the electric charge, with the default value being the one for the electron in SI (`-e` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
-- `m_q` is the mass of the charge, with the default value being the one for the electron in SI (`m_e` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
-- `λ` is the laser wavelangth with the default value 0.8μm
+The `GaussLaser` is defined by the `units` of the laser
+(a positional argument that can be `:SI`, `:atomic` or `:SI_unitful` and `:atomic_unitful`)
+and the following parameters
+- `λ` is the laser wavelangth
 - `a₀` is the normalized vector potential (defined as ``a_0=\\frac{eA}{m_e c^2}``)
 - `ϕ₀` is the initial phase with the default value 0.0
-- `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist) with the default value 58.0μm
+- `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist)
 - `ξx` and `ξy` give the polarization and have the default value `1.0 + 0im` and `0.0 + 0im`
-- `profile` is the temporal profile of the pulse and the default one is a Gaussian one
+- `orientation` specifies how the laser is oriented with respect to the
+default coordinate system (default `(:x, :z)`). See [`LaserGeometry`](@ref) for more details.
+- `propagation_dir` is the propagation direction of the wave in the
+intrinsic coordinate system (default `:z`). See [`LaserGeometry`](@ref) for more details.
+- `profile` is the temporal profile of the pulse and the default one is constant (infinite pules duration)
 
 During the initialization of the `GaussLaser` type, some useful derived values are
 also computed
@@ -95,7 +98,7 @@ function GaussLaser(units;
         w₀,
         ξx = 1.0+0im,
         ξy = 0,
-        oscillation_dir = :x,
+        orientation = (:x, :z),
         propagation_dir = :z,
         profile = ConstantProfile()
     )
@@ -112,7 +115,7 @@ function GaussLaser(units;
 
     cache = GaussLaserCache(λ, E₀)
 
-    geometry = LaserGeometry(oscillation_dir, propagation_dir)
+    geometry = LaserGeometry(orientation, propagation_dir)
 
     polarization = LaserPolarization(ξx, ξy)
 
