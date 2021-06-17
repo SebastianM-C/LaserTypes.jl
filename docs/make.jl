@@ -1,12 +1,5 @@
 using Documenter
 using LaserTypes
-using Literate
-
-# create literate versions of the source files
-filepath = joinpath(@__DIR__, "..", "src")
-files = joinpath.(filepath, readdir(filepath))
-
-# Literate.markdown.(files, joinpath(@__DIR__, "src", "generated"); documenter = false)
 
 makedocs(
     sitename = "LaserTypes",
@@ -25,17 +18,6 @@ makedocs(
         ],
         "covariant.md",
         "advanced.md"
-        # "Source code" => joinpath.("generated",
-        #         [
-        #         "LaserTypes.md",
-        #         "envelopes.md",
-        #         "electricfield.md",
-        #         "magneticfield.md",
-        #         "potential.md",
-        #         "gauss.md",
-        #         "laguerre-gauss.md"
-        #     ]
-        # ),
     ],
     modules = [LaserTypes]
 )
