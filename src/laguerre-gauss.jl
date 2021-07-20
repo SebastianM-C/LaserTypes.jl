@@ -118,7 +118,6 @@ function LaguerreGaussLaser(units;
         ξx = 1.0+0im,
         ξy = 0,
         orientation = (:x, :z),
-        propagation_dir = :z,
         profile = ConstantProfile()
     )
 
@@ -134,7 +133,7 @@ function LaguerreGaussLaser(units;
 
     cache = LaguerreGaussLaserCache(λ, E₀, m)
 
-    geometry = LaserGeometry(orientation, propagation_dir)
+    geometry = LaserGeometry(orientation)
 
     polarization = LaserPolarization(ξx, ξy)
 

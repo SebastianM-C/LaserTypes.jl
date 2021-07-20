@@ -99,7 +99,6 @@ function GaussLaser(units;
         ξx = 1.0+0im,
         ξy = 0,
         orientation = (:x, :z),
-        propagation_dir = :z,
         profile = ConstantProfile()
     )
 
@@ -115,7 +114,7 @@ function GaussLaser(units;
 
     cache = GaussLaserCache(λ, E₀)
 
-    geometry = LaserGeometry(orientation, propagation_dir)
+    geometry = LaserGeometry(orientation)
 
     polarization = LaserPolarization(ξx, ξy)
 

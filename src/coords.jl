@@ -6,13 +6,12 @@ with respect to a given reference system and by its propagation.
 """
 LaserGeometry
 
-struct LaserGeometry{O,P,R}
+struct LaserGeometry{O,R}
     orientation::O
-    propagation_dir::P
     rotation_matrix::R
 end
 
-function LaserGeometry(orientation, propagation_dir; isversor=false)
+function LaserGeometry(orientation; isversor=false)
     v₁ = !isversor ? normalize(orientation[1]) : orientation[1]
     v₃ = !isversor ? normalize(orientation[2]) : orientation[2]
     v₂ = v₃ × v₁
@@ -31,7 +30,7 @@ function LaserGeometry(orientation, propagation_dir; isversor=false)
     # rotation matrix
     R = E * transpose(V)
 
-    LaserGeometry(orientation, propagation_dir, R)
+    LaserGeometry(orientation, R)
 end
 
 function sym2vec(dir::Symbol)
@@ -44,12 +43,12 @@ function sym2vec(dir::Symbol)
     end
 end
 
-function LaserGeometry(orientation::Tuple{Symbol,Symbol}, propagation_dir)
+function LaserGeometry(orientation::Tuple{Symbol,Symbol})
     if orientation[1] == :x && orientation[2] == :z
-        return LaserGeometry((:x, :z), propagation_dir, I)
+        return LaserGeometry((:x, :z), I)
     end
     v₁ = sym2vec(orientation[1])
     v₃ = sym2vec(orientation[2])
 
-    LaserGeometry((v₁, v₃), propagation_dir, isversor=true)
+    LaserGeometry((v₁, v₃), isversor=true)
 end
