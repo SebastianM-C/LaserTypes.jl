@@ -1,12 +1,13 @@
 # # Laguerre-Gauss profile
 
-struct LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,N}
+struct LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,I,N}
     inv_c::IC
     ω::W
     k::K
     T₀::T
     z_R::Z
     E₀::E
+    mₐ::I
     Nₚₘ::N
 end
 
@@ -16,12 +17,13 @@ function LaguerreGaussLaserConstantCache(;c, λ, w₀, a₀, mₑ, q, p, m)
     T = 2π / ω
     z_R = w₀^2 * k / 2
     E₀ = a₀ * mₑ * c * ω / abs(q)
-    Nₚₘ = √(pochhammer(p+1, abs(m)))
+    mₐ = abs(m)
+    Nₚₘ = √(pochhammer(p+1, mₐ))
 
-    return LaguerreGaussLaserConstantCache(inv(c), ω, k, T, z_R, E₀, Nₚₘ)
+    return LaguerreGaussLaserConstantCache(inv(c), ω, k, T, z_R, E₀, mₐ, Nₚₘ)
 end
 
-@auto_hash_equals mutable struct LaguerreGaussLaserCache{L,S,CE,EE,I}
+@auto_hash_equals mutable struct LaguerreGaussLaserCache{L,S,CE,EE}
     x::L
     y::L
     σ::S
@@ -31,10 +33,10 @@ end
     Ez::CE
     Eg::CE
     NEgexp::EE
-    mₐ::I
+    rwz::S
 end
 
-function LaguerreGaussLaserCache(λ, E, m)
+function LaguerreGaussLaserCache(λ, E)
     ThreadLocal(LaguerreGaussLaserCache(
         zero(λ),                    # x
         zero(λ),                    # y
@@ -45,7 +47,7 @@ function LaguerreGaussLaserCache(λ, E, m)
         zero(E*im),                 # Ez
         zero(E*im),                 # Eg
         zero(E*im),                 # NEgexp
-        zero(m),                    # m₀
+        zero(λ/λ),                  # rwz
     ))
 end
 
@@ -58,18 +60,21 @@ function Base.fill!(cache::LaguerreGaussLaserCache, x::AbstractVector)
 end
 
 @doc """
-    struct LaguerreGaussLaser{V,Q,M,L,F,C,T,P,I,W,K,E,R}
+    struct LaguerreGaussLaser <: AbstractLaser
 
-The `LaguerreGaussLaser` is defined by the following independent parameters
-- `c` is the speed of light in vaccum, with the default value being in SI (`c_0` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
-- `q` is the electric charge, with the default value being the one for the electron in SI (`-e` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
-- `m_q` is the mass of the charge, with the default value being the one for the electron in SI (`m_e` from the CODATA2018 in the [PhysicalConstants](https://github.com/JuliaPhysics/PhysicalConstants.jl) package)
-- `λ` is the laser wavelangth with the default value 0.8μm
+The `LaguerreGaussLaser` is defined by the `units` of the laser
+(a positional argument that can be `:SI`, `:atomic` or `:SI_unitful` and `:atomic_unitful`)
+and the following parameters
+- `λ` is the laser wavelangth
 - `a₀` is the normalized vector potential (defined as ``a_0=\\frac{eA}{m_e c^2}``)
 - `ϕ₀` is the initial phase with the default value 0.0
-- `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist) with the default value 58.0μm
+- `w₀` is the beam radius at the Rayleigh range or [beam waist](https://en.wikipedia.org/wiki/Gaussian_beam#Beam_waist)
 - `ξx` and `ξy` give the polarization and have the default value `1.0 + 0im` and `0.0 + 0im`
-- `profile` is the temporal profile of the pulse and the default one is a Gaussian one
+- `orientation` specifies how the laser is oriented with respect to the
+default coordinate system (default `(:x, :z)`). See [`LaserGeometry`](@ref) for more details.
+- `propagation_dir` is the propagation direction of the wave in the
+intrinsic coordinate system (default `:z`). See [`LaserGeometry`](@ref) for more details.
+- `profile` is the temporal profile of the pulse and the default one is constant (infinite pules duration)
 - `p` is the radial index of the mode, ``p ∈ ℤ, p ≥ 0``, with the default value 1
 - `m` is the azimuthal index of the mode, ``m ∈ ℤ``, with the default value 0
 
@@ -84,15 +89,16 @@ also computed
 """
 LaguerreGaussLaser
 
-struct LaguerreGaussLaser{C0,Q,M,Eps,Mu,U,
-                          IC,W,K,T,Z,E,F,
-                          L,S,CE,EE,I,
+struct LaguerreGaussLaser{_P,_M,
+                          C0,Q,M,Eps,Mu,U,
+                          IC,W,K,T,Z,E,I,F,
+                          L,S,CE,EE,
                           D,R,
                           C,
                           P} <: AbstractLaser
     constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
-    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F}
-    cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE,I}}
+    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,I,F}
+    cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE}}
     geometry::LaserGeometry{D,R}
     polarization::LaserPolarization{C}
     profile::P
@@ -105,6 +111,48 @@ struct LaguerreGaussLaser{C0,Q,M,Eps,Mu,U,
     m::I
 end
 
+# This hack stores the m and p values in the type domain
+function LaguerreGaussLaser(
+    constants::FundamentalConstants{C0,Q,M,Eps,Mu,U},
+    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,I,F},
+    cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE}},
+    geometry::LaserGeometry{D,R},
+    polarization::LaserPolarization{C},
+    profile::P,
+    λ::L,
+    a₀::F,
+    ϕ₀::F,
+    w₀::L,
+    p::I,
+    m::I
+) where {C0,Q,M,Eps,Mu,U,
+         IC,W,K,T,Z,E,I,F,
+         L,S,CE,EE,
+         D,R,
+         C,
+         P}
+    LaguerreGaussLaser{Val{p},Val{m},
+                       C0,Q,M,Eps,Mu,U,
+                       IC,W,K,T,Z,E,I,F,
+                       L,S,CE,EE,
+                       D,R,
+                       C,
+                       P}(
+        constants,
+        derived,
+        cache,
+        geometry,
+        polarization,
+        profile,
+        λ,
+        a₀,
+        ϕ₀,
+        w₀,
+        p,
+        m
+    )
+end
+
 function LaguerreGaussLaser(units;
         λ,
         a₀,
@@ -114,8 +162,7 @@ function LaguerreGaussLaser(units;
         m = 0,
         ξx = 1.0+0im,
         ξy = 0,
-        oscillation_dir = :x,
-        propagation_dir = :z,
+        orientation = (:x, :z),
         profile = ConstantProfile()
     )
 
@@ -129,9 +176,9 @@ function LaguerreGaussLaser(units;
     derived = LaguerreGaussLaserConstantCache(; c, λ, w₀, a₀, mₑ, q, p, m)
     E₀ = derived.E₀
 
-    cache = LaguerreGaussLaserCache(λ, E₀, m)
+    cache = LaguerreGaussLaserCache(λ, E₀)
 
-    geometry = LaserGeometry(oscillation_dir, propagation_dir)
+    geometry = LaserGeometry(orientation)
 
     polarization = LaserPolarization(ξx, ξy)
 
@@ -152,7 +199,7 @@ function LaguerreGaussLaser(units;
 end
 
 """
-    Base.convert(::Type{GaussLaser}, laser::LaguerreGaussLaser)
+    convert_laser(::Type{GaussLaser}, laser::LaguerreGaussLaser)
 
 Convert a `LaguerreGaussLaser` to a `GaussLaser` with similar parameters.
 """
@@ -186,12 +233,15 @@ function convert_laser(::Type{GaussLaser}, laser::LaguerreGaussLaser)
     )
 end
 
+get_p(::Type{<:LaguerreGaussLaser{Val{P},Val{M}}}) where {P,M} = P
+get_m(::Type{<:LaguerreGaussLaser{Val{P},Val{M}}}) where {P,M} = M
+
 function required_coords(::LaguerreGaussLaser, r)
     CylindricalFromCartesian()(r)
 end
 
 function Ex(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, z_R = immutable_cache(laser)
+    @unpack Nₚₘ, z_R, mₐ = immutable_cache(laser)
     ξx = polarization(laser, :ξx)
     @unpack ϕ₀, p, m, cache = laser
     @unpack r, θ, z = coords
@@ -200,18 +250,21 @@ function Ex(laser::LaguerreGaussLaser, coords)
     Eg = Ex(gauss_laser, coords)
     wz = gauss_laser.cache[].wz
     σ = (r/wz)^2
-    mₐ = abs(m)
-    @pack! cache[] = Eg, wz, σ, mₐ
+    rwz = ustrip(NoUnits, r*√2/wz)
+    @pack! cache[] = Eg, wz, σ, rwz
 
-    ξx * Eg * Nₚₘ * (r*√2/wz)^mₐ * _₁F₁(-p, mₐ+1, 2σ) * exp(im*((2p+mₐ)*atan(z, z_R) - m*θ + ϕ₀))
+    ξx * Eg * Nₚₘ * rwz^mₐ * _₁F₁(-p, mₐ+1, 2σ) * exp(im*((2p+mₐ)*atan(z, z_R) - m*θ + ϕ₀))
 end
 
 function Ez(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, k, z_R = immutable_cache(laser)
-    @unpack wz, mₐ, σ, Eg, Ex, Ey, x, y = mutable_cache(laser)
+    @unpack Nₚₘ, mₐ, k, z_R = immutable_cache(laser)
+    @unpack wz, rwz, σ, Eg, Ex, Ey, x, y = mutable_cache(laser)
     @unpack ξx, ξy = polarization(laser)
     @unpack ϕ₀, p, m = laser
     @unpack r, θ, z = coords
+
+    P = get_p(typeof(laser))
+    M = get_m(typeof(laser))
 
     sgn = sign(m)
     𝟘 = zero(typeof(Ex))/oneunit(typeof(x))
@@ -219,9 +272,9 @@ function Ez(laser::LaguerreGaussLaser, coords)
     update_cache!(laser, :NEgexp, NEgexp)
 
     -im/k * (
-       (iszero(m) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
+       (iszero(M) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
      - 2/(wz^2) * (1 + im*z/z_R) * (x*Ex + y*Ey)
-     - (iszero(p) ? 𝟘 : 4p/((mₐ+1) * wz^2) * (x*ξx + y*ξy) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
+     - (iszero(P) ? 𝟘 : 4p/((mₐ+1) * wz^2) * (x*ξx + y*ξy) * rwz^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
     )
 end
 

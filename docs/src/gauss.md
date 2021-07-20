@@ -5,7 +5,7 @@ The `GaussLaser` type contains the parameters required for describing a
 ```math
 \newcommand{\ii}{\mathrm{i}}                % imaginary unit
 \begin{aligned}
-    E_x (r,z) &= \xi_x E_0 \frac{w_0}{w} \exp\left[-\ii k z -\frac{r^2}{w^2} -\ii \left(\frac{k r^2}{2 R} - \arctg{\frac{z}{z_R}} - \phi_0\right)\right]\\
+    E_x (r,z) &= \xi_x E_0 \frac{w_0}{w} \exp\left[-\ii k z -\frac{r^2}{w^2} -\ii \left(\frac{k r^2}{2 R} - \arctg{\frac{z}{z_R}} + \phi_0\right)\right]\\
     E_y (r,z) &= \frac{\xi_y}{\xi_x} E_x(r,z) \\
     E_z (r,z) &= \frac{2 \left(\ii -\frac{z}{z_R}\right)}{kw^2 (z)} \left[xE_x (r,z) +yE_y(r,z)\right]\,,
 \end{aligned}

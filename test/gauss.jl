@@ -23,3 +23,18 @@ using UnitfulAtomic
         @test iszero(Bz)
     end
 end
+
+@testset "Orientation" begin
+    s = setup_laser(GaussLaser, :SI, orientation=(:y,:x))
+    x₀ = SVector{3}(0,0,0)
+    t₀ = 0
+    Ex, Ey, Ez = E(x₀, t₀, s)
+    @test iszero(Ex)
+    @test Ey ≈ immutable_cache(s, :E₀)
+    @test iszero(Ez)
+
+    Bx, By, Bz = B(x₀, t₀, s)
+    @test iszero(Bx)
+    @test iszero(By)
+    @test Bz ≈ immutable_cache(s, :E₀) * immutable_cache(s, :inv_c)
+end

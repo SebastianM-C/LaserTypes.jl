@@ -18,6 +18,19 @@ import PhysicalConstants.CODATA2018: c_0, m_e, μ_0, e, α
     @test unit(s.constants.c) == u"m/s"
     @test unit(s.derived.k) == u"μm^-1"
     @test unit(s.derived.z_R) == u"μm"
+
+    # Alternatives
+    ω = 2π * c / λ
+    a1 = setup_laser(GaussLaser, :SI_unitful; ω, w₀=w0, a₀=2.0, τ)
+    @test a1 == s
+
+    k = 2π / λ
+    a2 = setup_laser(GaussLaser, :SI_unitful; ω, w₀=w0, a₀=2.0, profile = GaussProfile, τ)
+    @test a2 == s
+
+    z_R = w0^2 * k / 2
+    a3 = setup_laser(GaussLaser, :SI_unitful; k, z_R, a₀=2.0, profile = GaussProfile(;τ, z₀=0.0u"μm"))
+    @test a3 == s
 end
 
 @testset "Atomic Unitful" begin
