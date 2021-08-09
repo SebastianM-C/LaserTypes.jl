@@ -73,17 +73,20 @@ also computed
 """
 GaussLaser
 
-struct GaussLaser{C0,Q,M,Eps,Mu,U,
-                  IC,W,K,T,Z,E,
-                  L,CE,
-                  D,R,
-                  C,P,F} <: AbstractLaser
-    constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
-    derived::GaussLaserConstantCache{IC,W,K,T,Z,E}
-    cache::ThreadLocal{GaussLaserCache{L,CE}}
-    geometry::LaserGeometry{D,R}
-    polarization::LaserPolarization{C}
-    profile::P
+struct GaussLaser{PhysicsConst,
+                  Derived,
+                  Cache,
+                  Geometry,
+                  Polarization,
+                  Profile,
+                  L,
+                  F} <: AbstractLaser
+    constants::PhysicsConst
+    derived::Derived
+    cache::Cache
+    geometry::Geometry
+    polarization::Polarization
+    profile::Profile
     # laser parameters
     λ::L
     a₀::F
@@ -131,6 +134,8 @@ function GaussLaser(units;
         w₀
     )
 end
+
+update_cache!(::GaussLaser{P,D,Cache}, ::Any, ::Any) where {P,D,Cache<:Nothing} = nothing
 
 function required_coords(::GaussLaser, r)
     CylindricalFromCartesian()(r)
