@@ -18,7 +18,7 @@ struct ConstantProfile <: AbstractTemporalProfile end
 This envelope provides a finite duration for the laser pulse and thus can provide a more
 realistic description of an actual laser pulse.
 ```math
-envelope(z, t) = \\exp\\left[\\left(\\frac{φ}{τ}\\right)^2\\right],
+envelope(z, t) = \\exp\\left[-\\left(\\frac{φ}{τ}\\right)^2\\right],
 ```
 where
 ```math
