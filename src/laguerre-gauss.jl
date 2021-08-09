@@ -1,13 +1,12 @@
 # # Laguerre-Gauss profile
 
-struct LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,I,N}
+struct LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,N}
     inv_c::IC
     ω::W
     k::K
     T₀::T
     z_R::Z
     E₀::E
-    mₐ::I
     Nₚₘ::N
 end
 
@@ -20,7 +19,7 @@ function LaguerreGaussLaserConstantCache(;c, λ, w₀, a₀, mₑ, q, p, m)
     mₐ = abs(m)
     Nₚₘ = √(pochhammer(p+1, mₐ))
 
-    return LaguerreGaussLaserConstantCache(inv(c), ω, k, T, z_R, E₀, mₐ, Nₚₘ)
+    return LaguerreGaussLaserConstantCache(inv(c), ω, k, T, z_R, E₀, Nₚₘ)
 end
 
 @auto_hash_equals mutable struct LaguerreGaussLaserCache{L,S,CE,EE}
@@ -89,15 +88,16 @@ also computed
 """
 LaguerreGaussLaser
 
-struct LaguerreGaussLaser{_P,_M,
+struct LaguerreGaussLaser{_P,_M,_MA,
                           C0,Q,M,Eps,Mu,U,
-                          IC,W,K,T,Z,E,I,F,
+                          IC,W,K,T,Z,E,F,
                           L,S,CE,EE,
                           D,R,
                           C,
-                          P} <: AbstractLaser
+                          P,
+                          I} <: AbstractLaser
     constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
-    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,I,F}
+    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F}
     cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE}}
     geometry::LaserGeometry{D,R}
     polarization::LaserPolarization{C}
@@ -114,7 +114,7 @@ end
 # This hack stores the m and p values in the type domain
 function LaguerreGaussLaser(
     constants::FundamentalConstants{C0,Q,M,Eps,Mu,U},
-    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,I,F},
+    derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F},
     cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE}},
     geometry::LaserGeometry{D,R},
     polarization::LaserPolarization{C},
@@ -126,18 +126,20 @@ function LaguerreGaussLaser(
     p::I,
     m::I
 ) where {C0,Q,M,Eps,Mu,U,
-         IC,W,K,T,Z,E,I,F,
+         IC,W,K,T,Z,E,F,
          L,S,CE,EE,
          D,R,
          C,
-         P}
-    LaguerreGaussLaser{Val{p},Val{m},
+         P,
+         I}
+    LaguerreGaussLaser{Val{p},Val{m},Val{abs(m)},
                        C0,Q,M,Eps,Mu,U,
-                       IC,W,K,T,Z,E,I,F,
+                       IC,W,K,T,Z,E,F,
                        L,S,CE,EE,
                        D,R,
                        C,
-                       P}(
+                       P,
+                       I}(
         constants,
         derived,
         cache,
@@ -236,13 +238,15 @@ end
 
 get_p(::Type{<:LaguerreGaussLaser{Val{P},Val{M}}}) where {P,M} = P
 get_m(::Type{<:LaguerreGaussLaser{Val{P},Val{M}}}) where {P,M} = M
+get_mₐ(::Type{<:LaguerreGaussLaser{Val{P},Val{M},Val{MA}}}) where {P,M,MA} = MA
 
 function required_coords(::LaguerreGaussLaser, r)
     CylindricalFromCartesian()(r)
 end
 
 function Ex(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, z_R, mₐ = immutable_cache(laser)
+    @unpack Nₚₘ, z_R = immutable_cache(laser)
+    mₐ = get_mₐ(typeof(laser))
     ξx = polarization(laser, :ξx)
     @unpack ϕ₀, p, m, cache = laser
     @unpack r, θ, z = coords
@@ -258,41 +262,48 @@ function Ex(laser::LaguerreGaussLaser, coords)
     ξx * Eg * Nₚₘ * rwz^mₐ * _₁F₁(-p, mₐ+1, 2σ) * exp(im*((2p+mₐ)*atan(z, z_R) - m*θ + ϕ₀))
 end
 
-function Ez(laser::LaguerreGaussLaser, coords)
-    @unpack Nₚₘ, mₐ, k, z_R = immutable_cache(laser)
+function Ez(laser::T, coords) where T <: LaguerreGaussLaser
+    @unpack Nₚₘ, k, z_R = immutable_cache(laser)
     @unpack wz, rwz, σ, Eg, Ex, Ey, x, y = mutable_cache(laser)
     @unpack ξx, ξy = polarization(laser)
     @unpack ϕ₀, p, m = laser
     @unpack r, θ, z = coords
 
-    P = get_p(typeof(laser))
-    M = get_m(typeof(laser))
+    P = get_p(T)
+    M = get_m(T)
+    mₐ = get_mₐ(T)
 
-    sgn = sign(m)
+    sgn = sign(M)
     𝟘 = zero(typeof(Ex))/oneunit(typeof(x))
     NEgexp = Nₚₘ*Eg*exp(im*((2p+mₐ)*atan(z, z_R)-m*θ+ϕ₀))
     update_cache!(laser, :NEgexp, NEgexp)
+    # Compute (√2/wz)^mₐ * r^(mₐ-1) with the static value of |m|, so that it can be inferred in the unitful case.
+    rwz_term = Base.literal_pow(^, (√2/wz), Val{mₐ}()) * Base.literal_pow(^, r, Val{mₐ-1}())
 
     -im/k * (
-       (iszero(M) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * (√2/wz)^mₐ * r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
+       (iszero(M) ? 𝟘 : mₐ * (ξx - im*sgn*ξy) * rwz_term * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
      - 2/(wz^2) * (1 + im*z/z_R) * (x*Ex + y*Ey)
      - (iszero(P) ? 𝟘 : 4p/((mₐ+1) * wz^2) * (x*ξx + y*ξy) * rwz^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
     )
 end
 
-function Bz(laser::LaguerreGaussLaser, coords)
+function Bz(laser::T, coords) where T <: LaguerreGaussLaser
     @unpack ω, z_R = immutable_cache(laser)
-    @unpack wz, mₐ, σ, Ex, Ey, NEgexp, x, y = mutable_cache(laser)
+    @unpack wz, rwz, σ, Ex, Ey, NEgexp, x, y = mutable_cache(laser)
     @unpack ξx, ξy = polarization(laser)
     @unpack p, m = laser
     @unpack r, θ, z = coords
 
-    sgn = sign(m)
+    P = get_p(T)
+    M = get_m(T)
+    mₐ = get_mₐ(T)
+
+    sgn = sign(M)
     𝟘 = zero(typeof(Ex))/oneunit(typeof(x))
 
     -im/ω * (
-       - (iszero(m) ? 𝟘 : mₐ * (ξy + im*sgn*ξx) * (√2/wz)^mₐ*r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
+       - (iszero(M) ? 𝟘 : mₐ * (ξy + im*sgn*ξx) * (√2/wz)^mₐ*r^(mₐ-1) * _₁F₁(-p, mₐ+1, 2σ) * NEgexp * exp(im*sgn*θ))
        + 2/(wz^2) * (1 + im*z/z_R) * (x*Ey - y*Ex)
-       + (iszero(p) ? 𝟘 : (4p)/((mₐ+1) * wz^2) * (x*ξy - y*ξx) * (r*√2/wz)^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
+       + (iszero(P) ? 𝟘 : (4p)/((mₐ+1) * wz^2) * (x*ξy - y*ξx) * rwz^mₐ * _₁F₁(-p+1, mₐ+2, 2σ) * NEgexp)
     )
 end
