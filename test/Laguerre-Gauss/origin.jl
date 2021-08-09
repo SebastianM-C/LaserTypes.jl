@@ -23,7 +23,7 @@ t = (t₀, auconvert.(t₀), ustrip.(t₀), ustrip.(auconvert.(t₀)))
     Bx, By, Bz = B(xᵢ, tᵢ,s)
     @test iszero(Bx)
     @test iszero(By)
-    @test isapprox(Bz, - factorial(s.p)/pochhammer(abs(s.m)+1,s.p)*E₀*Nₚₘ*(√2*s.w₀)/(c*z_R))
+    @test Bz ≈ - factorial(s.p)/pochhammer(abs(s.m)+1,s.p)*E₀*Nₚₘ*(√2*s.w₀)/(c*z_R)
 end
 
 @testset "Default laser" begin

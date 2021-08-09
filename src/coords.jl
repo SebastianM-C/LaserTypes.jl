@@ -1,12 +1,19 @@
-struct LaserGeometry{D,R}
-    oscillation_dir::D
-    propagation_dir::D
+@doc """
+    struct LaserGeometry
+
+The geometrical aspects of the laser can be described through its orientation
+with respect to a given reference system and by its propagation.
+"""
+LaserGeometry
+
+struct LaserGeometry{O,R}
+    orientation::O
     rotation_matrix::R
 end
 
-function LaserGeometry(oscillation_dir, propagation_dir; isversor=false)
-    v₁ = !isversor ? normalize(oscillation_dir) : oscillation_dir
-    v₃ = !isversor ? normalize(propagation_dir) : propagation_dir
+function LaserGeometry(orientation; isversor=false)
+    v₁ = !isversor ? normalize(orientation[1]) : orientation[1]
+    v₃ = !isversor ? normalize(orientation[2]) : orientation[2]
     v₂ = v₃ × v₁
 
     # original basis
@@ -23,7 +30,7 @@ function LaserGeometry(oscillation_dir, propagation_dir; isversor=false)
     # rotation matrix
     R = E * transpose(V)
 
-    LaserGeometry(oscillation_dir, propagation_dir, R)
+    LaserGeometry(orientation, R)
 end
 
 function sym2vec(dir::Symbol)
@@ -36,12 +43,12 @@ function sym2vec(dir::Symbol)
     end
 end
 
-function LaserGeometry(oscillation_dir::Symbol, propagation_dir::Symbol)
-    if oscillation_dir == :x && propagation_dir == :z
-        return LaserGeometry(:x, :z, I)
+function LaserGeometry(orientation::Tuple{Symbol,Symbol})
+    if orientation[1] == :x && orientation[2] == :z
+        return LaserGeometry((:x, :z), I)
     end
-    v₁ = sym2vec(oscillation_dir)
-    v₃ = sym2vec(propagation_dir)
+    v₁ = sym2vec(orientation[1])
+    v₃ = sym2vec(orientation[2])
 
-    LaserGeometry(v₁, v₃, isversor=true)
+    LaserGeometry((v₁, v₃), isversor=true)
 end

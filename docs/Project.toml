@@ -1,6 +1,8 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
+Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
+PhysicalConstants = "5ad8b20f-a522-5ce9-bfc9-ddf1d5bda6ab"
 
 [compat]
-Literate = "2"
+Unitful = "1"
+PhysicalConstants = "0.2"
