@@ -213,9 +213,10 @@ function convert_laser(::Type{GaussLaser}, laser::LaguerreGaussLaser)
         a₀,
         constants.mₑ,
         constants.q)
-    E₀ = derived.E₀
+    # E₀ = derived.E₀
 
-    cache = GaussLaserCache(λ, E₀)
+    # Don't create a cache since it's not used and it allocates memory
+    cache = nothing # GaussLaserCache(λ, E₀)
 
     polarization = LaserPolarization(1, 0)
 
@@ -248,7 +249,8 @@ function Ex(laser::LaguerreGaussLaser, coords)
 
     gauss_laser = convert_laser(GaussLaser, laser)
     Eg = Ex(gauss_laser, coords)
-    wz = gauss_laser.cache[].wz
+    # We avoid computing wz in the GaussLaser call so that we can skip cache creation
+    wz = w(z, laser)
     σ = (r/wz)^2
     rwz = ustrip(NoUnits, r*√2/wz)
     @pack! cache[] = Eg, wz, σ, rwz
