@@ -55,7 +55,7 @@ E_z / c &     -B_y   &    B_z   &     0
 """
 function Fμν(x, laser)
     c⁻¹ = immutable_cache(laser, :inv_c)
-    r = x[begin+1:end]
+    r = @views x[begin+1:end]
     t = x[begin] * c⁻¹
     (Ex, Ey, Ez), (Bx, By, Bz) = EB(r, t, laser)
 
