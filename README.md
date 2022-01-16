@@ -9,6 +9,7 @@
 [![build status][build-img]][build-url]
 [![codecov][codecov-img]][codecov-url]
 [![docs][docs-img]][docs-url]
+[![DOI](https://zenodo.org/badge/238252086.svg)](https://zenodo.org/badge/latestdoi/238252086)
 
 This package aims to provide a common interface for different laser types. For the spatial profiles
 supported are Gauss and Laguerre-Gauss (with more to be added in the future).
