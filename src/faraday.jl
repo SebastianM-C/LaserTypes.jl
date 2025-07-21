@@ -1,24 +1,9 @@
 # # 4-Potential
 
-EB(r, t, laser, symbol) = EB(r, t, laser, Val(symbol))
+EB(r, t, laser, symbol::Symbol) = EB(r, t, laser, Val(symbol))
 
 function EB(r, t, laser, v::Val{T}) where T
-    @warn "Got unsupported field type :$T\n Valid arguments are :real and :complex. Falling back to :real."
-    return EB(r, t, laser, :real)
-end
-
-function EB(r, t, laser, ::Val{:real})
-    R = geometry(laser).rotation_matrix
-    r′ = rotate_coords(R, r)
-    inv_c = immutable_cache(laser, :inv_c)
-    if unit(eltype(r)) ≠ NoUnits
-        λ = laser.λ
-        r′ = uconvert.(unit(λ), r′)
-    end
-
-    E_B = real.(EB(r′, laser) .* g(r′[end], t, laser; inv_c))
-
-    return inv_rotate.((R,), E_B)
+    @error "Got unsupported field type :$T\n Valid arguments are :real and :complex."
 end
 
 function EB(r, t, laser, ::Val{:complex})
@@ -36,6 +21,7 @@ function EB(r, t, laser, ::Val{:complex})
 end
 
 EB(r, t, laser) = EB(r, t, laser, :real)
+EB(r, t, laser, ::Val{:real}) = real.(EB(r, t, laser, :complex))
 
 function EB(r, laser)
     @assert length(r) == 3 "The laser is only defined in 3D"
