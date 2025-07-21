@@ -16,3 +16,11 @@ Modules = [LaserTypes]
 Pages = ["src/coords.jl"]
 Order = [:type]
 ```
+
+## Derived Properties
+
+```@autodocs
+Modules = [LaserTypes]
+Pages = ["src/derived.jl"]
+Order = [:type]
+```

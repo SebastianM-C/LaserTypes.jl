@@ -200,7 +200,7 @@ function LaguerreGaussLaser(units;
     )
 end
 
-"""
+@doc """
     convert_laser(::Type{GaussLaser}, laser::LaguerreGaussLaser)
 
 Convert a `LaguerreGaussLaser` to a `GaussLaser` with similar parameters.

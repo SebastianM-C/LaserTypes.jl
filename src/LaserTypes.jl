@@ -15,11 +15,8 @@ using StaticArrays
 using CoordinateTransformations
 using AutoHashEquals
 using ParallelProcessingTools
+using HypergeometricFunctions: _₁F₁, pochhammer
 import PhysicalConstants.CODATA2018: c_0, e, m_e, ε_0, μ_0
-import HypergeometricFunctions
-
-const _₁F₁ = HypergeometricFunctions._₁F₁
-const pochhammer = HypergeometricFunctions.pochhammer
 
 abstract type AbstractLaser end
 abstract type AbstractTemporalProfile end

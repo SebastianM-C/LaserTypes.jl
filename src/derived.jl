@@ -1,4 +1,4 @@
-@doc """
+"""
     S(r, t, laser)
 
 Compute the [Poynting vector](https://en.wikipedia.org/wiki/Poynting_vector) defined as
