@@ -18,7 +18,7 @@ jobs:
       matrix:
         version:
           - '1'
-          - 'nightly'
+          - 'pre'
         os:
           - ubuntu-latest
           - macOS-latest
@@ -30,7 +30,7 @@ jobs:
           - "2"
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.julia-arch }}
@@ -55,7 +55,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - uses: julia-actions/setup-julia@v2
         with:
           version: '1'
       - run: |
