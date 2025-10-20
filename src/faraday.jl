@@ -1,7 +1,5 @@
 # # 4-Potential
 
-EB(r, t, laser, symbol::Symbol) = EB(r, t, laser, Val(symbol))
-
 function EB(r, t, laser, v::Val{T}) where T
     @error "Got unsupported field type :$T\n Valid arguments are :real and :complex."
 end
@@ -20,8 +18,8 @@ function EB(r, t, laser, ::Val{:complex})
     return inv_rotate.((R,), E_B)
 end
 
-EB(r, t, laser) = EB(r, t, laser, :real)
-EB(r, t, laser, ::Val{:real}) = real.(EB(r, t, laser, :complex))
+EB(r, t, laser) = EB(r, t, laser, Val(:real))
+EB(r, t, laser, ::Val{:real}) = real.(EB(r, t, laser, Val(:complex)))
 
 function EB(r, laser)
     @assert length(r) == 3 "The laser is only defined in 3D"

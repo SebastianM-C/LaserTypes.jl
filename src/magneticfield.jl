@@ -1,7 +1,5 @@
 # # Magnetic Field
 
-B(r, t, laser, symbol::Symbol) = B(r, t, laser, Val(symbol))
-
 function B(r, t, laser, v::Val{T}) where T
     @error "Got unsupported field type :$T\n Valid arguments are :real and :complex."
 end
@@ -20,8 +18,8 @@ function B(r, t, laser, ::Val{:complex})
     return inv_rotate(R, MagneticField)
 end
 
-B(r, t, laser) = B(r, t, laser, :real)
-B(r, t, laser, ::Val{:real}) = real(B(r, t, laser, :complex))
+B(r, t, laser) = B(r, t, laser, Val(:real))
+B(r, t, laser, ::Val{:real}) = real(B(r, t, laser, Val(:complex)))
 
 function B(x::SVector{4}, laser::AbstractLaser)
     inv_c = immutable_cache(laser, :inv_c)

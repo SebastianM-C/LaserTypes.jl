@@ -1,7 +1,5 @@
 # # Electric Field
 
-E(r, t, laser, symbol::Symbol) = E(r, t, laser, Val(symbol))
-
 function E(r, t, laser, v::Val{T}) where T
     @error "Got unsupported field type :$T\n Valid arguments are :real and :complex."
 end
@@ -20,8 +18,8 @@ function E(r, t, laser, ::Val{:complex})
     return inv_rotate(R, ElectricField)
 end
 
-E(r, t, laser) = E(r, t, laser, :real)
-E(r, t, laser, ::Val{:real}) = real(E(r, t, laser, :complex))
+E(r, t, laser) = E(r, t, laser, Val(:real))
+E(r, t, laser, ::Val{:real}) = real(E(r, t, laser, Val(:complex)))
 
 function E(x::SVector{4}, laser::AbstractLaser)
     inv_c = immutable_cache(laser, :inv_c)
