@@ -9,4 +9,5 @@ using Test, SafeTestsets
     @safetestset "Fμν" begin include("faraday.jl") end
     @safetestset "Derived" begin include("derived.jl") end
     @safetestset "Show" begin include("show.jl") end
+    @safetestset "QA" begin include("qa.jl") end
 end
