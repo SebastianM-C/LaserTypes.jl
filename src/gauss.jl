@@ -29,14 +29,16 @@ end
 end
 
 function GaussLaserCache(λ, E)
-    ThreadLocal(GaussLaserCache(
-        zero(λ),        # x
-        zero(λ),        # y
-        zero(λ),        # wz
-        zero(E*im),     # Ex
-        zero(E*im),     # Ey
-        zero(E*im)      # Ez
-    ))
+    TaskLocalValue{GaussLaserCache{typeof(zero(λ)),typeof(zero(E*im))}}() do
+        GaussLaserCache(
+            zero(λ),        # x
+            zero(λ),        # y
+            zero(λ),        # wz
+            zero(E*im),     # Ex
+            zero(E*im),     # Ey
+            zero(E*im)      # Ez
+        )
+    end
 end
 
 function Base.fill!(cache::GaussLaserCache, x::AbstractVector)

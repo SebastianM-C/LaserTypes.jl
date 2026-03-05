@@ -36,18 +36,20 @@ end
 end
 
 function LaguerreGaussLaserCache(λ, E)
-    ThreadLocal(LaguerreGaussLaserCache(
-        zero(λ),                    # x
-        zero(λ),                    # y
-        zero(λ/λ),                  # σ
-        zero(λ),                    # wz
-        zero(E*im),                 # Ex
-        zero(E*im),                 # Ey
-        zero(E*im),                 # Ez
-        zero(E*im),                 # Eg
-        zero(E*im),                 # NEgexp
-        zero(λ/λ),                  # rwz
-    ))
+    TaskLocalValue{LaguerreGaussLaserCache{typeof(zero(λ)),typeof(zero(λ/λ)),typeof(zero(E*im)),typeof(zero(E*im))}}() do
+        LaguerreGaussLaserCache(
+            zero(λ),                    # x
+            zero(λ),                    # y
+            zero(λ/λ),                  # σ
+            zero(λ),                    # wz
+            zero(E*im),                 # Ex
+            zero(E*im),                 # Ey
+            zero(E*im),                 # Ez
+            zero(E*im),                 # Eg
+            zero(E*im),                 # NEgexp
+            zero(λ/λ),                  # rwz
+        )
+    end
 end
 
 
@@ -91,21 +93,23 @@ LaguerreGaussLaser
 struct LaguerreGaussLaser{_P,_M,_MA,
                           C0,Q,M,Eps,Mu,U,
                           IC,W,K,T,Z,E,F,
-                          L,S,CE,EE,
+                          Cache,
                           D,R,
                           C,
                           P,
+                          L,
+                          FF,
                           I} <: AbstractLaser
     constants::FundamentalConstants{C0,Q,M,Eps,Mu,U}
     derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F}
-    cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE}}
+    cache::Cache
     geometry::LaserGeometry{D,R}
     polarization::LaserPolarization{C}
     profile::P
     # laser parameters
     λ::L
-    a₀::F
-    ϕ₀::F
+    a₀::FF
+    ϕ₀::FF
     w₀::L
     p::I
     m::I
@@ -115,30 +119,34 @@ end
 function LaguerreGaussLaser(
     constants::FundamentalConstants{C0,Q,M,Eps,Mu,U},
     derived::LaguerreGaussLaserConstantCache{IC,W,K,T,Z,E,F},
-    cache::ThreadLocal{LaguerreGaussLaserCache{L,S,CE,EE}},
+    cache::Cache,
     geometry::LaserGeometry{D,R},
     polarization::LaserPolarization{C},
     profile::P,
     λ::L,
-    a₀::F,
-    ϕ₀::F,
+    a₀::FF,
+    ϕ₀::FF,
     w₀::L,
     p::I,
     m::I
 ) where {C0,Q,M,Eps,Mu,U,
          IC,W,K,T,Z,E,F,
-         L,S,CE,EE,
+         Cache,
          D,R,
          C,
          P,
+         L,
+         FF,
          I}
     LaguerreGaussLaser{Val{p},Val{m},Val{abs(m)},
                        C0,Q,M,Eps,Mu,U,
                        IC,W,K,T,Z,E,F,
-                       L,S,CE,EE,
+                       Cache,
                        D,R,
                        C,
                        P,
+                       L,
+                       FF,
                        I}(
         constants,
         derived,
