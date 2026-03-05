@@ -14,7 +14,7 @@ using LinearAlgebra
 using StaticArrays
 using CoordinateTransformations
 using AutoHashEquals
-using ParallelProcessingTools
+using TaskLocalValues
 using HypergeometricFunctions: _₁F₁, pochhammer
 import PhysicalConstants.CODATA2018: c_0, e, m_e, ε_0, μ_0
 
