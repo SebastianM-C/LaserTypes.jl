@@ -23,40 +23,32 @@ end
 @inline inv_rotate(R, r) = R \ r
 @inline inv_rotate(::UniformScaling, r) = r
 
+# The cache field is excluded from equality and hashing: it holds transient
+# task-local scratch state, so including it would make the results depend on
+# the evaluation history of the current task.
 function Base.:(==)(a::AbstractLaser, b::AbstractLaser)
-    typeof(a) == typeof(b) &&
-    fundamental_constants(a) == fundamental_constants(b) &&
-    immutable_cache(a) == immutable_cache(b) &&
-    mutable_cache(a) == mutable_cache(b) &&
-    geometry(a) == geometry(b) &&
-    polarization(a) == polarization(b) &&
-    profile(a) == profile(b) &&
-    true
+    typeof(a) == typeof(b) || return false
+    for f in fieldnames(typeof(a))
+        f === :cache && continue
+        getfield(a, f) == getfield(b, f) || return false
+    end
+    return true
 end
 
 function Base.isequal(a::AbstractLaser, b::AbstractLaser)
-    t1 = typeof(a)
-    t2 = typeof(b)
-
-    isequal(t1, t2) &&
-    fundamental_constants(a) == fundamental_constants(b) &&
-    immutable_cache(a) == immutable_cache(b) &&
-    mutable_cache(a) == mutable_cache(b) &&
-    geometry(a) == mutable_cache(b) &&
-    polarization(a) == polarization(b) &&
-    profile(a) == profile(b) &&
-    true
+    typeof(a) == typeof(b) || return false
+    for f in fieldnames(typeof(a))
+        f === :cache && continue
+        isequal(getfield(a, f), getfield(b, f)) || return false
+    end
+    return true
 end
 
 function Base.hash(l::AbstractLaser, h::UInt)
-    constants = fundamental_constants(l)
-    derived = immutable_cache(l)
-    cache = mutable_cache(l)
-    geo = geometry(l)
-    pol = polarization(l)
-    prof = profile(l)
-
-    typename = Symbol(typeof(l))
-    hash(prof, hash(pol, hash(geo, hash(cache, hash(derived, hash(constants,
-        hash(typename, h)))))))
+    h = hash(Symbol(typeof(l)), h)
+    for f in fieldnames(typeof(l))
+        f === :cache && continue
+        h = hash(getfield(l, f), h)
+    end
+    return h
 end
