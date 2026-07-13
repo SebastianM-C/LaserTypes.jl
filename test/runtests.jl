@@ -10,5 +10,12 @@ using Test, SafeTestsets
     @safetestset "Derived" begin include("derived.jl") end
     @safetestset "Threads" begin include("threads.jl") end
     @safetestset "Show" begin include("show.jl") end
-    @safetestset "QA" begin include("qa.jl") end
+    # JET reports upstream runtime dispatch on Julia pre-releases (e.g. Base
+    # printing internals and StaticArrays construction on 1.13-DEV), so only
+    # run the QA tests on release versions.
+    if isempty(VERSION.prerelease)
+        @safetestset "QA" begin include("qa.jl") end
+    else
+        @info "Skipping JET QA tests on pre-release Julia" VERSION
+    end
 end
